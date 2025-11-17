@@ -1,6 +1,6 @@
 /**
  * QuPath Radiomics Feature Extraction
- * Extracts 48 radiomics features from cell detections
+ * Currently extracts 48 of the 120 radiomics features from cell detections
  */
 
 import qupath.lib.images.servers.ImageServer
