@@ -42,7 +42,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 1. Download `QuPath_Radiomics.groovy`
