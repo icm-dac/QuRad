@@ -1,7 +1,6 @@
 /**
  * QuPath Radiomics Feature Extraction - v2
  * Extracts 120 radiomics features from cell detections
- * 
  */
 
 import qupath.lib.images.servers.ImageServer
