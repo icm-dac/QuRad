@@ -49,12 +49,12 @@
 2. Open in QuPath Script Editor
 3. Run on your image with cell detections
 
-Can be used for annotated regions, or following segmentation with StarDist or Cellpose.
+Can be used for annotated regions, or following segmentation with native QuPath cell segmentation, StarDist or Cellpose.
 
 ### Basic Usage
 ```groovy
 // Configure output
-def outputDir = "/output"
+def outputDir = "/radiomics"
 def exportCSV = true
 
 // Select what to process

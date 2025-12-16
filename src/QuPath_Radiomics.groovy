@@ -15,7 +15,8 @@ import java.util.Arrays
 // CONFIGURATION
 // ============================================================================
 
-def outputDir = "/output"
+def outputDir = buildFilePath(PROJECT_BASE_DIR, "radiomics")
+mkdirs(outputDir)
 def exportCSV = true
 def addToMeasurements = true
 
