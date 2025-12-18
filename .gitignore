@@ -1,0 +1,6 @@
+# Large files
+*.ndpi
+example_data/gbm/*.ndpi
+# Large files
+example_data/gbm/*.ndpi
+*.ndpi
