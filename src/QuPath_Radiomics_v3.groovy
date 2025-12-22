@@ -1274,9 +1274,10 @@ objectsToProcess.eachWithIndex { pathObject, index ->
         results['Classification'] = pathObject.getPathClass()?.toString() ?: 'Unclassified'
         
         if (addToMeasurements) {
-            def ml = pathObject.getMeasurementList()
             results.each { k, v ->
-                if (v instanceof Number) ml.putMeasurement(k, v)
+                if (v instanceof Number) {
+                    pathObject.measurements.put(k, v.doubleValue())
+                }
             }
         }
         
@@ -1365,7 +1366,5 @@ println "  NGTDM: 5"
 println "  GLDM: 15"
 println "  -----------------"
 println "  Total: 121 + 3 metadata = 124"
-println "\nNOTE: v3 uses PyRadiomics-style binning (aligned to multiples of binWidth from 0)"
-println "      This should improve correlation with PyRadiomics features"
 println "=" * 80
 

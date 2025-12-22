@@ -1197,9 +1197,10 @@ objectsToProcess.eachWithIndex { pathObject, index ->
         results['Classification'] = pathObject.getPathClass()?.toString() ?: 'Unclassified'
         
         if (addToMeasurements) {
-            def ml = pathObject.getMeasurementList()
             results.each { k, v ->
-                if (v instanceof Number) ml.putMeasurement(k, v)
+                if (v instanceof Number) {
+                    pathObject.measurements.put(k, v.doubleValue())
+                }
             }
         }
         
