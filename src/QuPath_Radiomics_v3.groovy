@@ -1,10 +1,6 @@
 /**
  * QuPath Radiomics Feature Extraction - v3
  * Extracts 120 radiomics features from cell detections
- * 
- * CHANGES FROM V2:
- * - Uses PyRadiomics-style binning (aligned to multiples of binWidth from 0)
- * - This matches PyRadiomics quantization for better feature comparison
  */
 
 import qupath.lib.images.servers.ImageServer
