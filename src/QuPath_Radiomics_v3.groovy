@@ -1269,6 +1269,13 @@ objectsToProcess.eachWithIndex { pathObject, index ->
         results['ObjectType'] = pathObject.isDetection() ? 'Detection' : 'Annotation'
         results['Classification'] = pathObject.getPathClass()?.toString() ?: 'Unclassified'
         
+        // Add centroid coordinates for spatial matching
+        def roi = pathObject.getROI()
+        if (roi != null) {
+            results['Centroid_X'] = roi.getCentroidX()
+            results['Centroid_Y'] = roi.getCentroidY()
+        }
+        
         if (addToMeasurements) {
             results.each { k, v ->
                 if (v instanceof Number) {
@@ -1310,7 +1317,7 @@ featuresByCategory.each { category, features ->
 }
 
 def totalFeatures = featuresByCategory.findAll { k, v ->
-    k != 'ObjectID' && k != 'ObjectType' && k != 'Classification'
+    k != 'ObjectID' && k != 'ObjectType' && k != 'Classification' && k != 'Centroid'
 }.collect { k, v -> v.size() }.sum()
 println "\nTotal radiomics features: ${totalFeatures}"
 
