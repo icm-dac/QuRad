@@ -7,7 +7,7 @@
 
 ## Download
 
-1. Download the `QuPath_Radiomics.groovy` script from the [GitHub repository](https://github.com/your-username/QuRad)
+1. Download the `QuPath_Radiomics.groovy` script from the [GitHub repository](https://github.com/icm-dac/QuRad)
 
 2. Save it to a location you can easily access
 
