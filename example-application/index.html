@@ -536,17 +536,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#compare-cell-classes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compare Cell Classes
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -720,17 +709,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#compare-cell-classes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Compare Cell Classes
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -822,11 +800,9 @@
 <li>Cellpose extension</li>
 <li>Imported annotations (GeoJSON)</li>
 </ul>
-<!-- TODO: Add QuPath screenshot showing image with cell detections -->
-<div class="admonition note">
-<p class="admonition-title">Image placeholder</p>
-<p><em>Screenshot: QuPath with H&amp;E image and cell detections</em></p>
-</div>
+<p>In this example, we use a mouse glioblastoma H&amp;E image with cell detections:</p>
+<p><img alt="Raw H&amp;E image with cell detections" src="../assets/raw_he_image.png" /></p>
+<p><em>Mouse glioblastoma H&amp;E image loaded in QuPath with cell detections.</em></p>
 <h3 id="importing-external-annotations">Importing External Annotations</h3>
 <p>If you have annotations from external tools:</p>
 <ol>
@@ -847,11 +823,6 @@
 <ol>
 <li>Click <strong>Run</strong></li>
 </ol>
-<!-- TODO: Add screenshot of script output -->
-<div class="admonition note">
-<p class="admonition-title">Image placeholder</p>
-<p><em>Screenshot: Script editor with QuRad running</em></p>
-</div>
 <p>The script will process all cells and output:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>================================================================================
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>QuPath Radiomics Extraction - v3
@@ -871,14 +842,11 @@
 <p>Color cells by any radiomics feature:</p>
 <ol>
 <li>Go to <strong>Measure → Show measurement maps</strong></li>
-<li>Select a feature (e.g., <code>firstorder_Entropy</code>)</li>
+<li>Select a feature (e.g., <code>firstorder_Energy</code>)</li>
 <li>Cells are colored by feature value</li>
 </ol>
-<!-- TODO: Add measurement map screenshot -->
-<div class="admonition note">
-<p class="admonition-title">Image placeholder</p>
-<p><em>Screenshot: Measurement map showing cells colored by firstorder_Entropy</em></p>
-</div>
+<p><img alt="Measurement map showing cells colored by firstorder_Energy" src="../assets/measurement_map.png" /></p>
+<p><em>Measurement map visualization: cells colored by <code>firstorder_Energy</code>. Dark violet indicates cells with lower energy values, yellow indicates cells with higher energy values.</em></p>
 <p>This helps identify spatial patterns in your data, such as:</p>
 <ul>
 <li>Regions with high texture complexity</li>
@@ -892,23 +860,8 @@
 <li>The histogram appears below the dropdown</li>
 <li>Adjust the color scale with min/max sliders</li>
 </ol>
-<!-- TODO: Add histogram screenshot -->
-<div class="admonition note">
-<p class="admonition-title">Image placeholder</p>
-<p><em>Screenshot: Histogram of feature distribution</em></p>
-</div>
-<h3 id="compare-cell-classes">Compare Cell Classes</h3>
-<p>Compare feature distributions between different cell types:</p>
-<ol>
-<li>Classify your cells (manually or via classifier)</li>
-<li>Open <strong>Measure → Show measurement maps</strong></li>
-<li>The histogram shows distributions per class</li>
-</ol>
-<!-- TODO: Add class comparison screenshot -->
-<div class="admonition note">
-<p class="admonition-title">Image placeholder</p>
-<p><em>Screenshot: Feature distribution by cell class</em></p>
-</div>
+<p><img alt="Histogram of firstorder_Entropy distribution" src="../assets/histogram.png" /></p>
+<p><em>Histogram showing the distribution of <code>firstorder_Entropy</code> across all detected cells.</em></p>
 <h2 id="step-4-export-data">Step 4: Export Data</h2>
 <h3 id="csv-export">CSV Export</h3>
 <p>The CSV file is automatically saved to your project's <code>radiomics</code> folder:</p>
