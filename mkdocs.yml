@@ -1,6 +1,7 @@
 site_name: QuRad Documentation
 site_description: Comprehensive radiomics feature extraction for QuPath
 site_author: QuRad Team
+site_url: https://icm-dac.github.io/QuRad/
 repo_url: https://github.com/icm-dac/QuRad
 repo_name: QuRad
 
