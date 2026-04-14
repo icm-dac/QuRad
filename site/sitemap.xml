@@ -2,26 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://icm-dac.github.io/QuRad/</loc>
-         <lastmod>2026-02-26</lastmod>
-    </url>
-    <url>
-         <loc>https://icm-dac.github.io/QuRad/configuration/</loc>
-         <lastmod>2026-02-26</lastmod>
+         <lastmod>2026-04-13</lastmod>
     </url>
     <url>
          <loc>https://icm-dac.github.io/QuRad/example-application/</loc>
-         <lastmod>2026-02-26</lastmod>
+         <lastmod>2026-04-13</lastmod>
     </url>
     <url>
          <loc>https://icm-dac.github.io/QuRad/features/</loc>
-         <lastmod>2026-02-26</lastmod>
+         <lastmod>2026-04-13</lastmod>
     </url>
     <url>
-         <loc>https://icm-dac.github.io/QuRad/installation/</loc>
-         <lastmod>2026-02-26</lastmod>
-    </url>
-    <url>
-         <loc>https://icm-dac.github.io/QuRad/quickstart/</loc>
-         <lastmod>2026-02-26</lastmod>
+         <loc>https://icm-dac.github.io/QuRad/getting-started/</loc>
+         <lastmod>2026-04-13</lastmod>
     </url>
 </urlset>
