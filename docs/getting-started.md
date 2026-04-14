@@ -20,7 +20,7 @@ Open QuPath, then create a new project or open an existing one. Add your image(s
 
 QuRad can process any combination of:
 
-- **Cell detections** from QuPath's built-in cell detection, [StarDist](https://qupath.readthedocs.io/en/stable/docs/advanced/stardist.html), or [Cellpose](https://qupath.readthedocs.io/en/stable/docs/advanced/cellpose.html)
+- **Cell detections** from QuPath's built-in cell detection, StarDist, or Cellpose
 - **Annotations** drawn manually or imported from external sources
 
 ### 3. Import annotations (optional)
