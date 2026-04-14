@@ -26,13 +26,12 @@ theme:
     - navigation.top
     - search.highlight
     - content.code.copy
+    - toc.integrate
 
 nav:
   - Home: index.md
-  - Installation: installation.md
-  - Quick Start: quickstart.md
+  - Getting Started: getting-started.md
   - Feature Reference: features.md
-  - Configuration: configuration.md
   - Example Application: example-application.md
 
 markdown_extensions:

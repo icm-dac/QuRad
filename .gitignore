@@ -6,3 +6,8 @@ example_data/gbm/*.ndpi
 *.ndpi
 article_figures/
 example_data/
+article/
+article
+CLAUDE.md
+.claude/
+

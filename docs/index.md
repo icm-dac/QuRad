@@ -1,4 +1,4 @@
-# QuPath Radiomics Extension (QuRad)
+# Welcome to QuRad
 
 ```
  ██████╗ ██╗   ██╗██████╗  █████╗ ██████╗ 
@@ -9,23 +9,26 @@
  ╚══▀▀═╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
 ```
 
-**Comprehensive radiomics feature extraction for QuPath**
+---
 
-Extract 120 PyRadiomics-compatible features from cell detections and annotations directly within QuPath.
+## What is QuRad?
+
+QuRad is an open-source [QuPath](https://qupath.github.io/) Groovy-based extension that extracts 120 radiomic features directly from cell detections and user-defined regions. It is implemented as a self-contained Groovy script that runs within QuPath and does not require any external plugins or libraries.
+
+QuRad operates on **2D whole slide images (WSI)**, extracting features from grayscale images derived from RGB luminance. It has been validated on H&E histopathology images, and is compatible with **QuPath 0.5.0 and 0.6.0**.
+
+Extracted features can be used to **classify cells**, **characterize tissue regions**, **assess tissue quality**, and feed **downstream machine learning workflows**. By keeping the entire process within QuPath, QuRad streamlines the analytical workflow and preserves interactivity.
+
+This documentation covers **QuRad v3**. Source code and releases are available on [GitHub](https://github.com/icm-dac/QuRad).
+
+!!! warning "Research use"
+    QuRad is a research tool provided under the MIT license. It is intended for research purposes and has not been validated for clinical use.
 
 ---
 
-## Features
+## Output and Feature Classes
 
-- **120 Radiomics Features** - Complete PyRadiomics feature set
-- **8 Feature Classes** - First-order, Shape 2D/3D, GLCM, GLRLM, GLSZM, NGTDM, GLDM
-- **Fast Processing** - 400-1000 cells/second
-- **CSV Export** - Ready for machine learning workflows
-- **Batch Processing** - Process entire slides with 100k+ cells
-
----
-
-## Feature Classes
+QuRad extracts 120 features organized into 8 classes. For a detailed description of each feature, see the [Feature Reference](features.md).
 
 | Class | Features | Description |
 |-------|----------|-------------|
@@ -38,16 +41,12 @@ Extract 120 PyRadiomics-compatible features from cell detections and annotations
 | **NGTDM** | 5 | Neighborhood Gray Tone Difference Matrix |
 | **GLDM** | 14 | Gray Level Dependence Matrix features |
 
-**Total: 120 features + metadata columns**
-
 ---
 
 ## Quick Links
 
-- [Installation](installation.md) - Get started with QuRad
-- [Quick Start](quickstart.md) - Run your first radiomics extraction
-- [Feature Reference](features.md) - Complete list of all 120 features
-- [Configuration](configuration.md) - Customize extraction settings
+- [Getting Started](getting-started.md) - Set up and run your first radiomics extraction
+- [Feature Reference](features.md) - Detailed description of all 120 features
 - [Example Application](example-application.md) - End-to-end workflow tutorial
 
 ---
@@ -61,12 +60,14 @@ If you use QuRad in your research, please cite:
 
 ---
 
-## License
+## Acknowledgments
 
-MIT License - Free to use for research and commercial applications.
+QuRad was developed at Sorbonne Université, Institut du Cerveau — ICM (CNRS, Inria, Inserm, AP-HP, Hôpital de la Pitié-Salpêtrière, Paris), within the DAC team.
+
+This project is co-funded by the European Union's Horizon Europe research and innovation programme Cofund SOUND.AI under the Marie Skłodowska-Curie Grant Agreement No 101081674. It is also supported by Agence Nationale de la Recherche (ANR) JCJC LOChrom (ANR-23-CE17-0027-01), by the BRAINTWIN project funded under France 2030 through the PEPR Santé Numérique programme (ref. 2025-PEPR-121554), and by the MultiPOLA project funded by the Institut national du cancer (INCa; OSIRIS25).
 
 ---
 
-## Acknowledgments
+## License
 
-QuRad is inspired by PyRadiomics and designed for seamless QuPath integration.
+MIT License - Free to use for research and commercial applications.

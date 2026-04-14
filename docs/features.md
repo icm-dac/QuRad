@@ -1,6 +1,6 @@
 # Feature Reference
 
-QuRad extracts 120 radiomics features organized into 8 feature classes. All features are compatible with PyRadiomics.
+QuRad extracts 120 radiomics features organized into 8 feature classes. All features are compatible with [PyRadiomics](https://pyradiomics.readthedocs.io/en/latest/features.html). For an overview of the feature classes and their counts, see the [home page](index.md#output-and-feature-classes).
 
 ## First-Order Features (19 features)
 

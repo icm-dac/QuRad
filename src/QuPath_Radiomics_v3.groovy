@@ -12,37 +12,41 @@ import java.awt.image.BufferedImage
 import java.util.Arrays
 
 // ============================================================================
-// CONFIGURATION
+// CONFIGURATION — modify the settings below to match your analysis
 // ============================================================================
 
+// --- Output settings ---
 def outputDir = buildFilePath(PROJECT_BASE_DIR, "radiomics")
 mkdirs(outputDir)
-def exportCSV = true
-def addToMeasurements = true
+def exportCSV = true           // Save results to a CSV file
+def addToMeasurements = true   // Add features to QuPath's measurement table
 
+// --- Radiomics parameters ---
 def settings = [
-    binWidth: 25,
-    voxelArrayShift: 0,
-    force2D: true,
-    distances: [1],
-    angles: 4
+    binWidth: 25,              // Intensity binning width (PyRadiomics default: 25)
+    voxelArrayShift: 0,        // Intensity shift before binning
+    force2D: true,             // Force 2D processing (recommended for histopathology)
+    distances: [1],            // Pixel distances for texture computation
+    angles: 4                  // Number of angles for GLCM (4 = horizontal, vertical, both diagonals)
 ]
 
+// --- Feature classes to extract (set to false to skip) ---
 def enabledFeatures = [
-    'firstorder': true,
-    'shape': true,
-    'shape2D': true,
-    'glcm': true,
-    'glrlm': true,
-    'glszm': true,
-    'ngtdm': true,
-    'gldm': true
+    'firstorder': true,        // 19 intensity statistics
+    'shape': true,             // 16 3D-style shape features
+    'shape2D': true,           // 10 2D shape features
+    'glcm': true,              // 24 GLCM texture features
+    'glrlm': true,             // 16 GLRLM texture features
+    'glszm': true,             // 16 GLSZM texture features
+    'ngtdm': true,             // 5 NGTDM texture features
+    'gldm': true               // 14 GLDM texture features
 ]
 
-def processAnnotations = false
-def processDetections = true
-def selectedOnly = false
-def progressInterval = 10000
+// --- What to process (set to true/false) ---
+def processAnnotations = false // Process annotation objects (tissue regions, ROIs)
+def processDetections = true   // Process detection objects (cells)
+def selectedOnly = false       // Only process currently selected objects
+def progressInterval = 10000   // Print progress every N objects
 
 // ============================================================================
 // HELPER: Safe division
@@ -1332,7 +1336,9 @@ if (exportCSV && allResults.size() > 0) {
     def outputFile = new File(outputFolder, filename)
     
     outputFile.withWriter { writer ->
-        def headers = allResults[0].keySet().sort()
+        def metadataKeys = ['ObjectID', 'ObjectType', 'Classification', 'Centroid_X', 'Centroid_Y']
+        def featureKeys = (allResults[0].keySet() - metadataKeys).sort()
+        def headers = metadataKeys.findAll { allResults[0].containsKey(it) } + featureKeys
         writer.writeLine(headers.join(','))
         
         allResults.each { result ->
