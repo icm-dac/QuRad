@@ -13,9 +13,12 @@
 
 ## What is QuRad?
 
-QuRad is an open-source [QuPath](https://qupath.github.io/) Groovy-based extension that extracts 120 radiomic features directly from cell detections and user-defined regions. It is implemented as a self-contained Groovy script that runs within QuPath and does not require any external plugins or libraries.
+QuRad is an open-source [QuPath](https://qupath.github.io/) tool that extracts 120 radiomic features directly from cell detections and user-defined regions, without any external plugins or libraries. It is available in two interchangeable forms that share the same validated feature-extraction code:
 
-QuRad operates on **2D whole slide images (WSI)**, extracting features from grayscale images derived from RGB luminance. It has been validated on H&E histopathology images, and is compatible with **QuPath 0.5.0 and 0.6.0**.
+- an **installable QuPath extension** (a `.jar` with a menu command and settings dialog), and
+- a **self-contained Groovy script** that you paste into QuPath's Script Editor.
+
+QuRad operates on **2D whole slide images (WSI)**, extracting features from grayscale images derived from RGB luminance. It has been validated on H&E histopathology images and is built for **QuPath 0.6 and 0.7**.
 
 Extracted features can be used to **classify cells**, **characterize tissue regions**, **assess tissue quality**, and feed **downstream machine learning workflows**. By keeping the entire process within QuPath, QuRad streamlines the analytical workflow and preserves interactivity.
 

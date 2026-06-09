@@ -4,9 +4,18 @@ This guide walks you through setting up and running QuRad, from preparing your d
 
 ## Requirements
 
-- **QuPath** version 0.5.0 or 0.6.0
+- **QuPath** — version 0.6 or 0.7
 - A **QuPath project** with at least one image
 - **Detections or annotations** on your image (cells, tissue regions, or imported objects)
+
+QuRad comes in two interchangeable forms that produce identical results:
+
+| Form | Best for | How you run it |
+|------|----------|----------------|
+| **Extension** (`.jar`) | Most users; repeated use | Menu command **Extensions → QuRad** with a settings dialog |
+| **Script** (`.groovy`) | One-off runs, custom edits | Paste into the Script Editor and **Run** |
+
+Follow the section that matches the form you prefer below.
 
 ## Preparing Your Data
 
@@ -34,17 +43,41 @@ To import annotations from external tools (e.g., GeoJSON files):
 !!! tip "Supported formats"
     QuPath can import annotations from GeoJSON and other formats. GeoJSON is recommended for interoperability with Python workflows.
 
-## Download
+## Option A — Install the extension
 
-Download the script [`QuPath_Radiomics_v3.groovy`](https://github.com/icm-dac/QuRad/blob/main/src/QuPath_Radiomics_v3.groovy) from the GitHub repository. Always use the latest version available.
+The extension wraps the same feature code behind a menu command and settings dialog. Recommended for repeated use.
 
-Save it to a location you can easily access.
+### 1. Get the jar
 
-## Running QuRad
+Download `qupath-extension-qurad-<version>.jar` from the [Releases](https://github.com/icm-dac/QuRad/releases) page, or build it yourself:
+
+```bash
+cd extension
+./gradlew build      # requires a JDK 21 toolchain
+# jar is written to build/libs/qupath-extension-qurad-<version>.jar
+```
+
+The built jar runs on QuPath 0.6 and 0.7.
+
+### 2. Install it
+
+Drag the jar onto a running QuPath window (or use **Extensions → Manage extensions → installed extensions directory** and copy it in), then restart QuPath if prompted.
+
+### 3. Run it
+
+1. Open your project and select an image with detections/annotations
+2. Go to **Extensions → QuRad → Extract radiomics features…**
+3. Adjust the settings in the dialog (bin width, which objects, which feature classes, output options) and click **OK**
+
+The dialog mirrors the [configuration](#configuration) options described below. Results are written to the measurement table and/or a timestamped CSV, exactly like the script.
+
+## Option B — Run the script
+
+Download the script [`QuPath_Radiomics_v3.groovy`](https://github.com/icm-dac/QuRad/blob/main/src/QuPath_Radiomics_v3.groovy) from the GitHub repository. Always use the latest version available. Save it to a location you can easily access.
 
 There are two ways to use the script:
 
-### Option 1: Run directly
+### Option B1: Run directly
 
 1. Open your QuPath project and select an image
 2. Go to **Automate → Script editor**
@@ -52,7 +85,7 @@ There are two ways to use the script:
 4. Adjust the [configuration](#configuration) if needed
 5. Click **Run** (or press `Ctrl+R` / `Cmd+R`)
 
-### Option 2: Add to project scripts
+### Option B2: Add to project scripts
 
 1. Open your QuPath project
 2. Go to **Automate → Project scripts → Open scripts directory**
@@ -147,7 +180,7 @@ your_project/
     └── image_name_radiomics_20250126_143052.csv
 ```
 
-The CSV contains one row per object with the following columns:
+The CSV contains one row per object and **125 columns** (120 features + 5 metadata):
 
 | Column | Description |
 |--------|-------------|

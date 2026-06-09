@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -506,10 +506,14 @@
 </code></pre></div>
 <hr />
 <h2 id="what-is-qurad">What is QuRad?</h2>
-<p>QuRad is an open-source <a href="https://qupath.github.io/">QuPath</a> Groovy-based extension that extracts 120 radiomic features directly from cell detections and user-defined regions. It is implemented as a self-contained Groovy script that runs within QuPath and does not require any external plugins or libraries.</p>
-<p>QuRad operates on <strong>2D whole slide images (WSI)</strong>, extracting features from grayscale images derived from RGB luminance. It has been validated on H&amp;E histopathology images, and is compatible with <strong>QuPath 0.5.0 and 0.6.0</strong>.</p>
+<p>QuRad is an open-source <a href="https://qupath.github.io/">QuPath</a> tool that extracts 120 radiomic features directly from cell detections and user-defined regions, without any external plugins or libraries. It is available in two interchangeable forms that share the same validated feature-extraction code:</p>
+<ul>
+<li>an <strong>installable QuPath extension</strong> (a <code>.jar</code> with a menu command and settings dialog), and</li>
+<li>a <strong>self-contained Groovy script</strong> that you paste into QuPath's Script Editor.</li>
+</ul>
+<p>QuRad operates on <strong>2D whole slide images (WSI)</strong>, extracting features from grayscale images derived from RGB luminance. It has been validated on H&amp;E histopathology images and is built for <strong>QuPath 0.6 and 0.7</strong>.</p>
 <p>Extracted features can be used to <strong>classify cells</strong>, <strong>characterize tissue regions</strong>, <strong>assess tissue quality</strong>, and feed <strong>downstream machine learning workflows</strong>. By keeping the entire process within QuPath, QuRad streamlines the analytical workflow and preserves interactivity.</p>
-<p>This documentation covers <strong>QuRad v3</strong>. Source code and releases are available on <a href="https://github.com/icm-dac/QuRad">GitHub</a>. For more details, see the <a href="#citation">QuRad paper</a>.</p>
+<p>This documentation covers <strong>QuRad v3</strong>. Source code and releases are available on <a href="https://github.com/icm-dac/QuRad">GitHub</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Research use</p>
 <p>QuRad is a research tool provided under the MIT license. It is intended for research purposes and has not been validated for clinical use.</p>
@@ -579,7 +583,6 @@
 <h2 id="citation">Citation</h2>
 <p>If you use QuRad in your research, please cite:</p>
 <ul>
-<li><strong>QuRad</strong>: Arslan, J., Künzle, T., Güner, Y., &amp; Alentorn, A. (2025). QuRad: Radiomics feature extraction for QuPath. <em>Bioinformatics</em> (in press).</li>
 <li><strong>QuPath</strong>: Bankhead, P. et al. (2017). QuPath: Open source software for digital pathology image analysis. <em>Scientific Reports</em>, 7, 16878.</li>
 <li><strong>PyRadiomics</strong>: van Griethuysen, J.J.M. et al. (2017). Computational Radiomics System to Decode the Radiographic Phenotype. <em>Cancer Research</em>, 77(21), e104-e107.</li>
 </ul>

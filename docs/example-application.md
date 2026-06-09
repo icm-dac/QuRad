@@ -7,12 +7,12 @@ This guide walks through a complete radiomics workflow: from an image with detec
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │  Prepare image  │ -> │  Run QuRad      │ -> │  Visualize      │ -> │  Export &        │
-│  with objects   │    │  script         │    │  in QuPath      │    │  analyze         │
+│  with objects   │    │  (menu/script)  │    │  in QuPath      │    │  analyze         │
 └─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 1. **Prepare**: Load an image with cell detections or annotations in QuPath
-2. **Extract**: Run the QuRad script to compute 120 features per object
+2. **Extract**: Run QuRad — from the Extensions menu or the script editor — to compute 120 features per object
 3. **Visualize**: Use measurement maps to explore spatial patterns
 4. **Export**: Save the CSV for further analysis (classification, clustering, etc.)
 
@@ -47,7 +47,22 @@ If you have annotations from external tools:
 2. Select your GeoJSON file
 3. Annotations appear as detection objects
 
-## Step 2: Run the QuRad Script
+## Step 2: Run QuRad
+
+QuRad can be run from the **extension menu** (recommended) or the **script editor**. Both compute the same 120 features.
+
+### Option A: Extension menu
+
+1. Go to **Extensions → QuRad → Extract radiomics features…**
+2. In the settings dialog, set the bin width, choose which objects to process (detections, annotations, or selected only), select the feature classes to compute, and choose the output (add to the measurement table and/or export a CSV).
+3. Click **OK**. A notification reports progress and confirms when extraction is complete.
+
+<!-- Screenshot placeholder — add docs/assets/qurad_dialog.png, then uncomment:
+![QuRad extraction dialog](assets/qurad_dialog.png)
+*The QuRad settings dialog opened from Extensions → QuRad → Extract radiomics features…*
+-->
+
+### Option B: Script editor
 
 1. Open **Automate → Script editor**
 2. Load `QuPath_Radiomics_v3.groovy`
@@ -59,9 +74,7 @@ def exportCSV = true
 def addToMeasurements = true
 ```
 
-4. Click **Run**
-
-The script will process all objects and output:
+4. Click **Run**. The script processes all objects and prints progress to the console:
 
 ```
 ================================================================================

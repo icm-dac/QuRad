@@ -38,18 +38,27 @@
 | **NGTDM** | 5 | Neighborhood Gray Tone Difference Matrix |
 | **GLDM** | 14 | Gray Level Dependence Matrix features |
 
-**Total: 120 features + 3 metadata columns = 123 CSV columns**
+**Total: 120 features + 5 metadata columns = 125 CSV columns**
 
 ---
 
 ## Quick Start
 
-### Installation
-1. Download `QuPath_Radiomics.groovy`
+QuRad comes in two interchangeable forms that share the same validated feature code:
+
+### Option A — Extension (recommended)
+1. Download `qupath-extension-qurad-<version>.jar` from [Releases](https://github.com/icm-dac/QuRad/releases) (or build it: `cd extension && ./gradlew build`, requires a JDK 21 toolchain)
+2. Drag the jar onto QuPath (or **Extensions → Manage extensions**)
+3. Run **Extensions → QuRad → Extract radiomics features…** and adjust the settings dialog
+
+Built for QuPath 0.6 and 0.7. See [`extension/README.md`](extension/README.md) for build/test details.
+
+### Option B — Script
+1. Download `src/QuPath_Radiomics_v3.groovy`
 2. Open in QuPath Script Editor
 3. Run on your image with cell detections
 
-Can be used for annotated regions, or following segmentation with native QuPath cell segmentation, StarDist or Cellpose.
+Built for **QuPath 0.6 and 0.7**. Can be used for annotated regions, or following segmentation with native QuPath cell segmentation, StarDist or Cellpose.
 
 ### Basic Usage
 ```groovy
@@ -68,7 +77,7 @@ def processAnnotations = false
 ```
 slide_name_ALL_120_FEATURES_20251116_220656.csv
 ├── 184,024 rows (one per cell)
-└── 123 columns (120 features + 3 metadata)
+└── 125 columns (120 features + 5 metadata)
 ```
 
 ---
