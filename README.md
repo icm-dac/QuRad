@@ -13,6 +13,8 @@
 > 
 > Extract 120 pyRadiomics-compatible features from cell detections and annotations
 
+📖 **Documentation:** https://icm-dac.github.io/QuRad/
+
 ---
 
 ## Features
