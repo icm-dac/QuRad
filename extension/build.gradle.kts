@@ -7,7 +7,7 @@ plugins {
 qupathExtension {
     name = "qupath-extension-qurad"
     group = "io.github.icm-dac"
-    version = "0.2.0"
+    version = "0.3.0"
     description = "Radiomics feature extraction for QuPath (QuRad)"
     automaticModule = "io.github.icmdac.qupath.extension.qurad"
 }
