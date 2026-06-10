@@ -135,11 +135,11 @@ def enabledFeatures = [
     'firstorder': true,        // 19 intensity statistics
     'shape': true,             // 16 3D-style shape features
     'shape2D': true,           // 10 2D shape features
-    'glcm': true,              // 24 GLCM texture features
+    'glcm': true,              // 23 GLCM texture features
     'glrlm': true,             // 16 GLRLM texture features
     'glszm': true,             // 16 GLSZM texture features
     'ngtdm': true,             // 5 NGTDM texture features
-    'gldm': true               // 14 GLDM texture features
+    'gldm': true               // 15 GLDM texture features
 ]
 ```
 
@@ -191,11 +191,11 @@ The CSV contains one row per object and **125 columns** (120 features + 5 metada
 | `firstorder_*` | 19 first-order features |
 | `shape2D_*` | 10 shape features |
 | `shape_*` | 16 3D shape features |
-| `glcm_*` | 24 GLCM features |
+| `glcm_*` | 23 GLCM features |
 | `glrlm_*` | 16 GLRLM features |
 | `glszm_*` | 16 GLSZM features |
 | `ngtdm_*` | 5 NGTDM features |
-| `gldm_*` | 14 GLDM features |
+| `gldm_*` | 15 GLDM features |
 
 ### QuPath measurements
 

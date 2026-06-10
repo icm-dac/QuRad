@@ -50,4 +50,21 @@ class RadiomicsCalculatorTest {
         assertEquals(1.2d, f['MeanAbsoluteDeviation'] as double, EPS)
         assertEquals(2.0d, f['InterquartileRange'] as double, EPS)
     }
+
+    @Test
+    void floodFillUsesEightConnectivity() {
+        int[][] image = [[5, 0], [0, 5]] as int[][]
+        boolean[][] visited = new boolean[2][2]
+        int size = calc.floodFill(image, visited, 0, 0, 5)
+        assertEquals(2, size)
+    }
+
+    @Test
+    void axisLengthsFromMaskPrincipalAxes() {
+        boolean[][] line = [[true, true, true, true]] as boolean[][]
+        def axes = calc.computeAxisLengths(line)
+        assertEquals(4.0d * Math.sqrt(4.0d * 5.0d / 12.0d), axes[0] as double, EPS)
+        assertEquals(0.0d, axes[1] as double, EPS)
+        assertEquals(0.0d, axes[2] as double, EPS)
+    }
 }

@@ -35,11 +35,11 @@ def enabledFeatures = [
     'firstorder': true,        // 19 intensity statistics
     'shape': true,             // 16 3D-style shape features
     'shape2D': true,           // 10 2D shape features
-    'glcm': true,              // 24 GLCM texture features
+    'glcm': true,              // 23 GLCM texture features
     'glrlm': true,             // 16 GLRLM texture features
     'glszm': true,             // 16 GLSZM texture features
     'ngtdm': true,             // 5 NGTDM texture features
-    'gldm': true               // 14 GLDM texture features
+    'gldm': true               // 15 GLDM texture features
 ]
 
 // --- What to process (set to true/false) ---
@@ -261,30 +261,57 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
 // SHAPE FEATURES - 2D (10 features)
 // ============================================================================
 
-def calculateShape2DFeatures(ROI roi) {
+def computeAxisLengths(boolean[][] mask) {
+    double sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0
+    long n = 0
+    for (int y = 0; y < mask.length; y++) {
+        for (int x = 0; x < mask[y].length; x++) {
+            if (mask[y][x]) {
+                sx += x; sy += y
+                sxx += (double) x * x; syy += (double) y * y; sxy += (double) x * y
+                n++
+            }
+        }
+    }
+    if (n < 2) return [0.0, 0.0, 0.0]
+    double mx = sx / n, my = sy / n
+    double denom = n - 1
+    double cxx = (sxx - n * mx * mx) / denom
+    double cyy = (syy - n * my * my) / denom
+    double cxy = (sxy - n * mx * my) / denom
+    double tr = cxx + cyy
+    double det = cxx * cyy - cxy * cxy
+    double disc = Math.sqrt(Math.max(0.0, tr * tr / 4.0 - det))
+    double l1 = tr / 2.0 + disc
+    double l2 = tr / 2.0 - disc
+    if (l2 < 0) l2 = 0.0
+    double major = 4.0 * Math.sqrt(l1)
+    double minor = 4.0 * Math.sqrt(l2)
+    double elong = l1 > 0 ? Math.sqrt(l2 / l1) : 0.0
+    return [major, minor, elong]
+}
+
+def calculateShape2DFeatures(ROI roi, boolean[][] mask) {
     def features = [:]
     double area = roi.getArea()
     double perimeter = roi.getLength()
-    
-    features['MeshSurfaceArea'] = perimeter
-    features['PixelSurface'] = perimeter
+
+    features['MeshSurfaceArea'] = area
+    features['PixelSurface'] = area
     features['Perimeter'] = perimeter
     features['PerimeterSurfaceRatio'] = area > 0 ? perimeter / area : 0.0
-    
+
     double sphericity = perimeter > 0 ? (4.0 * Math.PI * area) / (perimeter * perimeter) : 0.0
     features['Sphericity'] = sphericity
     features['SphericalDisproportion'] = sphericity > 0 ? 1.0 / sphericity : 0.0
-    
-    double width = roi.getBoundsWidth()
-    double height = roi.getBoundsHeight()
-    double major = Math.max(width, height)
-    double minor = Math.min(width, height)
-    
+
+    def (major, minor, elong) = computeAxisLengths(mask)
+
     features['MajorAxisLength'] = major
     features['MinorAxisLength'] = minor
-    features['Elongation'] = major > 0 ? minor / major : 0.0
-    features['Flatness'] = features['Elongation']
-    
+    features['Elongation'] = elong
+    features['Flatness'] = elong
+
     return features
 }
 
@@ -292,27 +319,26 @@ def calculateShape2DFeatures(ROI roi) {
 // SHAPE FEATURES - 3D (16 features)
 // ============================================================================
 
-def calculateShape3DFeatures(ROI roi) {
+def calculateShape3DFeatures(ROI roi, boolean[][] mask) {
     def features = [:]
     double area = roi.getArea()
     double perimeter = roi.getLength()
-    
+
     features['VoxelVolume'] = area
     features['MeshVolume'] = area
     features['SurfaceArea'] = perimeter
     features['SurfaceVolumeRatio'] = area > 0 ? perimeter / area : 0.0
-    
+
     double sphericity = perimeter > 0 ? (4.0 * Math.PI * area) / (perimeter * perimeter) : 0.0
     features['Sphericity'] = sphericity
     features['Compactness1'] = perimeter > 0 ? area / Math.sqrt(Math.PI * perimeter * perimeter * perimeter) : 0.0
     features['Compactness2'] = perimeter > 0 ? 36.0 * Math.PI * area * area / (perimeter * perimeter * perimeter) : 0.0
     features['SphericalDisproportion'] = sphericity > 0 ? 1.0 / sphericity : 0.0
-    
+
     double width = roi.getBoundsWidth()
     double height = roi.getBoundsHeight()
-    double major = Math.max(width, height)
-    double minor = Math.min(width, height)
-    
+    def (major, minor, elong) = computeAxisLengths(mask)
+
     features['Maximum3DDiameter'] = Math.sqrt(width * width + height * height)
     features['Maximum2DDiameterSlice'] = features['Maximum3DDiameter']
     features['Maximum2DDiameterColumn'] = width
@@ -320,13 +346,13 @@ def calculateShape3DFeatures(ROI roi) {
     features['MajorAxisLength'] = major
     features['MinorAxisLength'] = minor
     features['LeastAxisLength'] = minor
-    features['Elongation'] = major > 0 ? minor / major : 0.0
-    
+    features['Elongation'] = elong
+
     return features
 }
 
 // ============================================================================
-// GLCM FEATURES (24 features)
+// GLCM FEATURES (23 features)
 // ============================================================================
 
 def buildGLCM(int[][] image, boolean[][] mask, int distance, def binEdges) {
@@ -702,8 +728,12 @@ def floodFill(int[][] image, boolean[][] visited, int startX, int startY, int ta
         stack.add([cx - 1, cy])
         stack.add([cx, cy + 1])
         stack.add([cx, cy - 1])
+        stack.add([cx + 1, cy + 1])
+        stack.add([cx - 1, cy - 1])
+        stack.add([cx + 1, cy - 1])
+        stack.add([cx - 1, cy + 1])
     }
-    
+
     return size
 }
 
@@ -947,7 +977,7 @@ def calculateNGTDMFeatures(int[][] image, boolean[][] mask, Map settings, def bi
 }
 
 // ============================================================================
-// GLDM FEATURES (14 features)
+// GLDM FEATURES (15 features)
 // ============================================================================
 
 def buildGLDM(int[][] image, boolean[][] mask, def binEdges) {
@@ -1149,26 +1179,26 @@ def extractFeatures(ImageServer server, PathObject pathObject, Map settings, Map
         ROI roi = pathObject.getROI()
         if (roi == null) return results
         
-        // Shape features
-        if (enabledFeatures['shape2D']) {
-            calculateShape2DFeatures(roi).each { k, v -> results["shape2D_${k}"] = v }
-        }
-        if (enabledFeatures['shape']) {
-            calculateShape3DFeatures(roi).each { k, v -> results["shape_${k}"] = v }
-        }
-        
-        // Check if intensity features needed
+        boolean needsShape = enabledFeatures['shape2D'] || enabledFeatures['shape']
         boolean needsIntensity = enabledFeatures['firstorder'] || enabledFeatures['glcm'] ||
                                 enabledFeatures['glrlm'] || enabledFeatures['glszm'] ||
                                 enabledFeatures['ngtdm'] || enabledFeatures['gldm']
-        
-        if (!needsIntensity) return results
-        
-        // Get image data
+
+        if (!needsShape && !needsIntensity) return results
+
         def request = RegionRequest.createInstance(server.getPath(), 1.0, roi)
         def img = server.readRegion(request)
         def (intensities, imageMatrix, mask) = extractPixelsWithMask(img, roi, request)
-        
+
+        if (enabledFeatures['shape2D']) {
+            calculateShape2DFeatures(roi, mask).each { k, v -> results["shape2D_${k}"] = v }
+        }
+        if (enabledFeatures['shape']) {
+            calculateShape3DFeatures(roi, mask).each { k, v -> results["shape_${k}"] = v }
+        }
+
+        if (!needsIntensity) return results
+
         if (intensities.length == 0) return results
         
         // Calculate bin edges once for this ROI (PyRadiomics-style)
@@ -1368,12 +1398,12 @@ println "Expected features breakdown:"
 println "  First Order: 19"
 println "  Shape2D: 10"
 println "  Shape: 16"
-println "  GLCM: 24"
+println "  GLCM: 23"
 println "  GLRLM: 16"
 println "  GLSZM: 16"
 println "  NGTDM: 5"
 println "  GLDM: 15"
 println "  -----------------"
-println "  Total: 121 + 3 metadata = 124"
+println "  Total: 120 + 5 metadata = 125"
 println "=" * 80
 

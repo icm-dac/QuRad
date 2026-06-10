@@ -68,7 +68,7 @@ Shape features describe the geometric properties of the ROI in 2D.
 | `shape_LeastAxisLength` | Same as minor axis |
 | `shape_Elongation` | Minor/major axis ratio |
 
-## GLCM Features (24 features)
+## GLCM Features (23 features)
 
 Gray Level Co-occurrence Matrix features capture texture by analyzing spatial relationships between pixel pairs.
 
@@ -156,7 +156,7 @@ Neighborhood Gray Tone Difference Matrix features capture texture by comparing p
 | `ngtdm_Complexity` | Rapid intensity changes |
 | `ngtdm_Strength` | Primitiveness of texture |
 
-## GLDM Features (14 features)
+## GLDM Features (15 features)
 
 Gray Level Dependence Matrix features capture texture by analyzing how many connected pixels share similar intensities.
 

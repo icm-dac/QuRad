@@ -34,11 +34,11 @@
 | **First-order** | 19 | Intensity statistics (mean, variance, entropy, etc.) |
 | **Shape 2D** | 10 | 2D geometric features (area, perimeter, sphericity) |
 | **Shape 3D** | 16 | 3D geometric features (volume, surface area) |
-| **GLCM** | 24 | Gray Level Co-occurrence Matrix texture features |
+| **GLCM** | 23 | Gray Level Co-occurrence Matrix texture features |
 | **GLRLM** | 16 | Gray Level Run Length Matrix features |
 | **GLSZM** | 16 | Gray Level Size Zone Matrix features |
 | **NGTDM** | 5 | Neighborhood Gray Tone Difference Matrix |
-| **GLDM** | 14 | Gray Level Dependence Matrix features |
+| **GLDM** | 15 | Gray Level Dependence Matrix features |
 
 **Total: 120 features + 5 metadata columns = 125 CSV columns**
 
@@ -97,6 +97,18 @@ def settings = [
 ```
 
 ---
+
+## Example data
+
+The sample image under `example_data/breast_cancer/` (`ytma10_010704_benign1_ccd.tif`)
+is a single breast-cancer tissue-microarray tile from the **UCSB Bio-Segmentation
+benchmark**, licensed under **CC BY 3.0**. It is included here, under that license and with
+attribution, as a small worked example for validating QuRad's output; QuRad does not claim
+authorship of this image. If you use it, please cite the original source:
+
+> E. Drelie Gelasca, J. Byun, B. Obara and B. S. Manjunath, "Evaluation and benchmark for
+> biological image segmentation," *2008 15th IEEE International Conference on Image
+> Processing (ICIP)*, San Diego, CA, 2008, pp. 1816–1819.
 
 ## Citation
 
