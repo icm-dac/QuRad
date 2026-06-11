@@ -21,7 +21,7 @@
 
 - **120 Radiomics Features** - Complete pyRadiomics feature set
 - **8 Feature Classes** - First-order, Shape 2D/3D, GLCM, GLRLM, GLSZM, NGTDM, GLDM
-- **Fast Processing** - 400-1000 cells/second
+- **Fast Processing** - up to 200 cells/second
 - **CSV Export** - Ready for machine learning workflows
 - **Batch Processing** - Process entire slides with 100k+ cells
 
