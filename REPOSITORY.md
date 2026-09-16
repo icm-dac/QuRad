@@ -83,8 +83,8 @@ copied verbatim from the extension's calculator; the two must never drift apart.
 | `breast_cancer/ytma10_010704_benign1_ccd_labels.tif` | Its label image — the raster ground truth the masks are checked against. |
 | `breast_cancer/cell_detections.geojson` | The 410 cell polygons, traced from the label image. |
 | `puma_subset/training_set_primary_roi_0NN.tif` + `_nuclei.geojson` | 20 PUMA melanoma tiles and their annotated nuclei. Needed only to re-extract features from pixels. |
-| `puma_subset/radiomics/` | The QuRad output for the 20 tiles, exactly as QuPath writes it (`<tile>_radiomics_<timestamp>.csv` + `_settings.json`). Notebook 2 uses the newest file per tile, so re-extracting in QuPath and dropping the files here is all it takes to re-run the analysis on your own numbers. `archived_v0.3/` keeps the superseded QuRad 0.3 tables. |
-| `tiger_subset/radiomics/*B_radiomics_*.csv` | The QuRad output for the six slides, as QuPath writes it. Notebook 3 uses the newest file per slide. The files currently there are the archived QuRad 0.3 tables the paper's TIGER numbers come from. |
+| `puma_subset/radiomics/` | The QuRad output for the 20 tiles, exactly as QuPath writes it (`<tile>_radiomics_<timestamp>.csv` + `_settings.json`). Notebook 2 uses the newest file per tile, so re-extracting in QuPath and dropping the files here is all it takes to re-run the analysis on your own numbers. |
+| `tiger_subset/radiomics/*B_radiomics_*.csv` | The QuRad output for the six slides, as QuPath writes it. Notebook 3 uses the newest file per slide — the QuRad 0.4 tables behind the paper's TIGER numbers. |
 | `tiger_subset/*.tif`, `*.xml`, `*.geojson` | The six TIGER whole-slide images (98–188 MB each, from AWS Open Data `s3://tiger-training/`), their ASAP XML annotations, and the GeoJSON versions QuPath imports. The TIFFs are gitignored; re-download with `aws s3 cp --no-sign-request`. |
 
 ### `validation/` — the PyRadiomics comparison harness

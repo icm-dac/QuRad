@@ -13,5 +13,5 @@ Please cite the original source:
 > for biological image segmentation," *2008 15th IEEE International Conference on Image
 > Processing (ICIP)*, San Diego, CA, 2008, pp. 1816–1819.
 
-The accompanying `cell_detections.geojson` and `cell_info.csv` are derived from this
+The accompanying `cell_detections.geojson` and the QuRad output (`ytma10_..._radiomics_<timestamp>.csv` with its `_settings.json`, as written by QuPath) are derived from this
 image for the example workflow.

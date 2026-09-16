@@ -1,9 +1,9 @@
 feature_set,n_input,n_kept,fold_macro_f1,pooled_macro_f1
-basic morphology/intensity (10),10,8-9,0.657 +/- 0.047,0.657
-first-order only,19,9-11,0.675 +/- 0.042,0.679
-shape2D only,10,6-7,0.509 +/- 0.098,0.522
-"texture only (GLCM, GLRLM, GLSZM, NGTDM, GLDM)",75,30-33,0.687 +/- 0.063,0.682
-first-order + shape2D,29,15-17,0.673 +/- 0.030,0.676
-first-order + texture (no shape),94,38-40,0.700 +/- 0.051,0.702
-all 2D features (default output),104,41-46,0.720 +/- 0.069,0.725
-all 2D + legacy 3D-named shape,120,42-48,0.702 +/- 0.086,0.714
+basic morphology/intensity (10),10,8-9,0.657 +/- 0.032,0.651
+first-order only,19,9-11,0.677 +/- 0.040,0.676
+shape2D only,10,5-6,0.527 +/- 0.151,0.538
+"texture only (GLCM, GLRLM, GLSZM, NGTDM, GLDM)",74,28-31,0.712 +/- 0.080,0.711
+first-order + shape2D,29,13-16,0.661 +/- 0.027,0.663
+first-order + texture (no shape),93,34-39,0.694 +/- 0.032,0.694
+all 2D features (default output),103,37-43,0.694 +/- 0.057,0.696
+all 2D + legacy 3D-named shape,119,40-46,0.692 +/- 0.083,0.701

@@ -7,9 +7,9 @@
  },
  "n_features_input": 103,
  "main": {
-  "pooled_macro_f1": 0.8524904399569203,
-  "fold_mean": 0.8373876383030364,
-  "fold_sd": 0.021214782945269853,
+  "pooled_macro_f1": 0.853431348370379,
+  "fold_mean": 0.8383480312058165,
+  "fold_sd": 0.022353006575661718,
   "n_features_mean": 62.6,
   "n_features_min": 62.0,
   "n_features_max": 63.0
@@ -74,10 +74,10 @@
    "n_train": 4940,
    "n_test": 1246,
    "n_features": 62,
-   "macro_f1": 0.8561208525064774,
-   "accuracy": 0.877207062600321,
-   "F1[Lymphocyte]": 0.8010403120936281,
-   "F1[Tumor]": 0.9112013929193268
+   "macro_f1": 0.860922817020378,
+   "accuracy": 0.8812199036918138,
+   "F1[Lymphocyte]": 0.8077922077922078,
+   "F1[Tumor]": 0.9140534262485482
   },
   {
    "fold": 5,
@@ -98,51 +98,51 @@
  ],
  "report": {
   "Lymphocyte": {
-   "precision": 0.8207354443309499,
-   "recall": 0.7816147859922179,
-   "f1-score": 0.8006975585450922,
+   "precision": 0.8218478815722308,
+   "recall": 0.7830739299610895,
+   "f1-score": 0.8019925280199253,
    "support": 2056.0
   },
   "Tumor": {
-   "precision": 0.8938032166508988,
-   "recall": 0.9150121065375303,
-   "f1-score": 0.9042833213687484,
+   "precision": 0.8944878164182636,
+   "recall": 0.9154963680387409,
+   "f1-score": 0.9048701687208328,
    "support": 4130.0
   },
-  "accuracy": 0.870675719366311,
+  "accuracy": 0.8714839961202716,
   "macro avg": {
-   "precision": 0.8572693304909244,
-   "recall": 0.848313446264874,
-   "f1-score": 0.8524904399569203,
+   "precision": 0.8581678489952471,
+   "recall": 0.8492851489999151,
+   "f1-score": 0.853431348370379,
    "support": 6186.0
   },
   "weighted avg": {
-   "precision": 0.8695181633224451,
-   "recall": 0.870675719366311,
-   "f1-score": 0.8698552049178211,
+   "precision": 0.8703449606078136,
+   "recall": 0.8714839961202716,
+   "f1-score": 0.8706774061471074,
    "support": 6186.0
   }
  },
  "top_features": {
   "mean_importance": {
-   "firstorder_Energy": 0.0848,
-   "shape2D_MajorAxisLength": 0.0683,
-   "glszm_LargeAreaHighGrayLevelEmphasis": 0.0612,
-   "glrlm_GrayLevelNonUniformity": 0.0538,
-   "gldm_DependenceVariance": 0.0392,
-   "firstorder_Skewness": 0.0374,
-   "ngtdm_Strength": 0.037,
-   "glcm_ClusterShade": 0.0369,
-   "ngtdm_Coarseness": 0.0345,
-   "glrlm_LongRunHighGrayLevelEmphasis": 0.0252,
-   "firstorder_RootMeanSquared": 0.0248,
-   "glrlm_RunLengthNonUniformityNormalized": 0.024,
+   "firstorder_Energy": 0.1049,
+   "shape2D_MajorAxisLength": 0.0679,
+   "glszm_LargeAreaHighGrayLevelEmphasis": 0.0623,
+   "glrlm_GrayLevelNonUniformity": 0.0535,
+   "gldm_DependenceVariance": 0.039,
+   "firstorder_Skewness": 0.0375,
+   "ngtdm_Strength": 0.0372,
+   "glcm_ClusterShade": 0.0366,
+   "ngtdm_Coarseness": 0.0346,
+   "glrlm_LongRunHighGrayLevelEmphasis": 0.0256,
+   "firstorder_RootMeanSquared": 0.0253,
+   "glrlm_RunLengthNonUniformityNormalized": 0.0239,
    "shape2D_PerimeterSurfaceRatio": 0.0219,
    "gldm_DependenceNonUniformity": 0.0215,
-   "gldm_LargeDependenceHighGrayLevelEmphasis": 0.0214
+   "gldm_LargeDependenceHighGrayLevelEmphasis": 0.0213
   },
   "folds_selected": {
-   "firstorder_Energy": 4,
+   "firstorder_Energy": 5,
    "shape2D_MajorAxisLength": 5,
    "glszm_LargeAreaHighGrayLevelEmphasis": 5,
    "glrlm_GrayLevelNonUniformity": 5,
@@ -206,14 +206,14 @@
    "feature_set": "all 2D features (default output)",
    "n_input": 103,
    "n_kept": "62-63",
-   "fold_macro_f1": "0.837 +/- 0.021",
-   "pooled_macro_f1": 0.852
+   "fold_macro_f1": "0.838 +/- 0.022",
+   "pooled_macro_f1": 0.853
   },
   {
    "feature_set": "all 2D + legacy 3D-named shape",
    "n_input": 119,
    "n_kept": "63-65",
-   "fold_macro_f1": "0.838 +/- 0.023",
+   "fold_macro_f1": "0.839 +/- 0.023",
    "pooled_macro_f1": 0.854
   }
  ],
@@ -232,15 +232,15 @@
   "shape_SphericalDisproportion": 0,
   "shape_Sphericity": 0,
   "shape_SurfaceArea": 0,
-  "shape_SurfaceVolumeRatio": 0,
+  "shape_SurfaceVolumeRatio": 1,
   "shape_VoxelVolume": 0
  },
  "per_tile": [
   {
    "group": 1,
    "n": 405,
-   "accuracy": 0.8518518518518519,
-   "macro_f1": 0.8471544306345293
+   "accuracy": 0.8592592592592593,
+   "macro_f1": 0.8546659867414584
   },
   {
    "group": 2,
@@ -275,14 +275,14 @@
   {
    "group": 7,
    "n": 163,
-   "accuracy": 0.6932515337423313,
-   "macro_f1": 0.6051356589147286
+   "accuracy": 0.7055214723926381,
+   "macro_f1": 0.615112160566706
   },
   {
    "group": 8,
    "n": 475,
-   "accuracy": 0.9452631578947368,
-   "macro_f1": 0.7147542498152254
+   "accuracy": 0.9431578947368421,
+   "macro_f1": 0.7095064440870688
   },
   {
    "group": 9,
@@ -341,8 +341,8 @@
   {
    "group": 18,
    "n": 203,
-   "accuracy": 0.916256157635468,
-   "macro_f1": 0.9121279250375576
+   "accuracy": 0.9211822660098522,
+   "macro_f1": 0.917479674796748
   },
   {
    "group": 19,
@@ -358,8 +358,8 @@
   }
  ],
  "versions": {
-  "sklearn": "1.6.1",
-  "numpy": "2.2.6",
+  "sklearn": "1.7.2",
+  "numpy": "1.26.4",
   "umap": "0.5.11",
   "qurad": "0.4.0"
  },

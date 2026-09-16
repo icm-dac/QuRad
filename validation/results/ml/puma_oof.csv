@@ -106,7 +106,7 @@ fbaf9976-f74f-4e0b-92fb-91b9075690c5,1,Lymphocyte,Lymphocyte
 5f01ff99-9a08-4f48-8a65-8ad2f318083b,1,Tumor,Tumor
 6c38ed7c-306d-437b-ae33-56ae540ad26f,1,Tumor,Tumor
 4fd24ff5-fde3-44e7-94b1-53c9bd226b2e,1,Tumor,Lymphocyte
-2e2c63fb-5042-43bd-86cc-f60ed44a1977,1,Tumor,Lymphocyte
+2e2c63fb-5042-43bd-86cc-f60ed44a1977,1,Tumor,Tumor
 ecd5b0b1-5548-42a4-842e-66d39744fdd4,1,Lymphocyte,Lymphocyte
 911ac72b-57e8-43bd-ab2a-0a24526b97ea,1,Lymphocyte,Tumor
 e4b38ac8-9f47-412a-a764-d6f74ee3e852,1,Tumor,Lymphocyte
@@ -333,7 +333,7 @@ d3a943f9-79e4-4776-8eb5-ccbbee32c80a,1,Tumor,Lymphocyte
 797fc909-15c8-4484-98fa-00d438ad518a,1,Lymphocyte,Lymphocyte
 a243987d-47fa-491c-aef9-4e7be72e9676,1,Lymphocyte,Lymphocyte
 dc750d9c-8951-4a07-87b9-e234ea516e41,1,Tumor,Tumor
-618ea785-f085-4d05-9f04-035e48e8eb91,1,Lymphocyte,Tumor
+618ea785-f085-4d05-9f04-035e48e8eb91,1,Lymphocyte,Lymphocyte
 00026371-38db-4816-980f-5970402315be,1,Lymphocyte,Lymphocyte
 e4468569-c106-49be-8723-7cd674ec53f1,1,Lymphocyte,Lymphocyte
 01080d28-d861-46cf-a6e9-42832dc708dd,1,Lymphocyte,Lymphocyte
@@ -342,7 +342,7 @@ e4468569-c106-49be-8723-7cd674ec53f1,1,Lymphocyte,Lymphocyte
 11e80256-31fd-4314-ba93-e016fe6b83ed,1,Lymphocyte,Lymphocyte
 3673ba78-a0c3-4d87-8e28-9825cce99898,1,Lymphocyte,Lymphocyte
 adc5c159-7ada-468c-bf4f-48be3ff4d71f,1,Lymphocyte,Lymphocyte
-4d8b8ed7-c079-4fc7-9167-0e2ae1e9d3be,1,Lymphocyte,Tumor
+4d8b8ed7-c079-4fc7-9167-0e2ae1e9d3be,1,Lymphocyte,Lymphocyte
 03be2fed-8cc0-4905-b760-abbd5ef2f406,1,Lymphocyte,Lymphocyte
 78673203-85c0-40c9-83ae-93f2d9fe292f,1,Lymphocyte,Lymphocyte
 60453e11-7e2d-412c-befe-16f2ae2cd3fb,1,Tumor,Tumor
@@ -2191,7 +2191,7 @@ e403227d-4e8a-416c-a20d-dd60e7c7d3ba,7,Tumor,Lymphocyte
 02f31ed3-482e-452b-b6b3-5c0e8450bd92,7,Tumor,Tumor
 9dea9fd4-82ab-49f9-a200-d64d04c3d903,7,Lymphocyte,Lymphocyte
 5ff67cb5-aa57-4d12-9b15-b9c6e29cd158,7,Tumor,Lymphocyte
-eb053dc9-1d57-43c4-807d-8998d2064204,7,Tumor,Lymphocyte
+eb053dc9-1d57-43c4-807d-8998d2064204,7,Tumor,Tumor
 2b57dde3-3042-430e-82b8-2a6b29691c7a,7,Tumor,Lymphocyte
 be896415-41de-4e3a-88ff-351070251a8e,7,Tumor,Tumor
 9a27cfef-3a9b-4401-aa6e-304b98199eb0,7,Tumor,Tumor
@@ -2206,7 +2206,7 @@ c5bec330-bbcf-492b-a70d-114f524ae211,7,Tumor,Lymphocyte
 00cdcca7-7cfc-40b5-a241-caa403af1ba7,7,Tumor,Lymphocyte
 2bfa6533-0fdd-40b3-a10b-90716dd194ac,7,Tumor,Lymphocyte
 9734bfd3-1ca6-473d-b35f-46af7c2ee20f,7,Tumor,Tumor
-349df172-1e22-476c-a949-61e729daad95,7,Tumor,Lymphocyte
+349df172-1e22-476c-a949-61e729daad95,7,Tumor,Tumor
 3d714203-cb5a-46dd-874d-b85b84c34a7f,7,Tumor,Lymphocyte
 6cc0960e-129e-4b8e-a4fc-a4c5cfea668a,7,Lymphocyte,Lymphocyte
 8d009f5a-da41-458b-8716-4df332e5108f,7,Tumor,Lymphocyte
@@ -2488,7 +2488,7 @@ ca4858c5-4ac2-46e8-bd59-ffe56d7a62d4,8,Tumor,Tumor
 f58a3ca5-3891-42f9-9f52-fca98ead5027,8,Tumor,Tumor
 259b1aff-f2b5-4da2-941f-53afb7132322,8,Tumor,Tumor
 2045092d-efcf-4b97-870f-1e2e86d9e708,8,Lymphocyte,Tumor
-0bd08347-d4e5-4233-9fb2-f6321371cace,8,Tumor,Tumor
+0bd08347-d4e5-4233-9fb2-f6321371cace,8,Tumor,Lymphocyte
 fb7b7f0f-764f-4d48-bedf-5baaaf7d8d4a,8,Tumor,Tumor
 317ab453-9726-4299-b5f9-332ed4113fc3,8,Tumor,Tumor
 52289ff1-c29d-47ec-b5f0-cd73c10f377a,8,Tumor,Tumor
@@ -5446,7 +5446,7 @@ b0fd7a85-d92a-44b0-9fc4-88d562faec1b,18,Lymphocyte,Lymphocyte
 f4450c03-6260-423b-ae8f-ecabd0ce2a5a,18,Lymphocyte,Lymphocyte
 cf297145-93c9-4a96-823b-75f30f391fdd,18,Lymphocyte,Lymphocyte
 8254c65c-014d-4162-b402-96eec6340763,18,Lymphocyte,Tumor
-cc19301b-e145-46b6-8037-88d6ce7be148,18,Lymphocyte,Tumor
+cc19301b-e145-46b6-8037-88d6ce7be148,18,Lymphocyte,Lymphocyte
 f06a2058-cf54-4522-bbb5-0ef63b688659,18,Tumor,Tumor
 f1a11c42-73ba-45ad-a23d-227b64beaf51,18,Lymphocyte,Lymphocyte
 e494b477-db10-49f5-9075-af75fbbcc659,18,Lymphocyte,Lymphocyte

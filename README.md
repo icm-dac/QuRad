@@ -152,5 +152,5 @@ jupyter lab notebooks/
 Only the first notebook needs PyRadiomics installed; the other two do not.
 
 [`REPOSITORY.md`](REPOSITORY.md) explains what every directory and file in this repository is
-for. TIGER uses explicitly archived version-0.3 features; its whole-slide images are not
-redistributable and are not included.
+for. The TIGER whole-slide images are public (AWS Open Data) but large and are not included;
+the feature tables extracted from them are.

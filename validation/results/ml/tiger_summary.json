@@ -13,14 +13,14 @@
   "tumor-associated stroma": 62,
   "healthy glands": 32
  },
- "n_features_input": 104,
+ "n_features_input": 103,
  "main_3fold": {
-  "pooled_macro_f1": 0.7254631094238814,
-  "fold_mean": 0.7200151896997357,
-  "fold_sd": 0.0685051679808298,
-  "n_features_mean": 43.333333333333336,
-  "n_features_min": 41.0,
-  "n_features_max": 46.0
+  "pooled_macro_f1": 0.6960997877707924,
+  "fold_mean": 0.6941790972414966,
+  "fold_sd": 0.05725759850080256,
+  "n_features_mean": 39.666666666666664,
+  "n_features_min": 37.0,
+  "n_features_max": 43.0
  },
  "folds_3fold": [
   {
@@ -30,12 +30,12 @@
    ],
    "n_train": 128,
    "n_test": 69,
-   "n_features": 41,
-   "macro_f1": 0.7641012743125418,
-   "accuracy": 0.7681159420289855,
-   "F1[healthy glands]": 0.6285714285714286,
-   "F1[invasive tumor]": 0.7887323943661971,
-   "F1[tumor-associated stroma]": 0.875
+   "n_features": 37,
+   "macro_f1": 0.6865929969378245,
+   "accuracy": 0.6956521739130435,
+   "F1[healthy glands]": 0.5714285714285714,
+   "F1[invasive tumor]": 0.7297297297297297,
+   "F1[tumor-associated stroma]": 0.7586206896551724
   },
   {
    "fold": 2,
@@ -45,7 +45,7 @@
    ],
    "n_train": 132,
    "n_test": 65,
-   "n_features": 43,
+   "n_features": 39,
    "macro_f1": 0.6410927056088347,
    "accuracy": 0.7076923076923077,
    "F1[healthy glands]": 0.0,
@@ -61,7 +61,7 @@
    ],
    "n_train": 134,
    "n_test": 63,
-   "n_features": 46,
+   "n_features": 43,
    "macro_f1": 0.7548515891778304,
    "accuracy": 0.7301587301587301,
    "F1[healthy glands]": 0.88,
@@ -71,34 +71,34 @@
  ],
  "report_3fold": {
   "healthy glands": {
-   "precision": 0.7857142857142857,
-   "recall": 0.6875,
-   "f1-score": 0.7333333333333333,
+   "precision": 0.75,
+   "recall": 0.65625,
+   "f1-score": 0.7,
    "support": 32.0
   },
   "invasive tumor": {
-   "precision": 0.7304347826086957,
-   "recall": 0.8155339805825242,
-   "f1-score": 0.7706422018348624,
+   "precision": 0.7033898305084746,
+   "recall": 0.8058252427184466,
+   "f1-score": 0.751131221719457,
    "support": 103.0
   },
   "tumor-associated stroma": {
-   "precision": 0.7222222222222222,
-   "recall": 0.6290322580645161,
-   "f1-score": 0.6724137931034483,
+   "precision": 0.7058823529411765,
+   "recall": 0.5806451612903226,
+   "f1-score": 0.6371681415929203,
    "support": 62.0
   },
-  "accuracy": 0.7360406091370558,
+  "accuracy": 0.7106598984771574,
   "macro avg": {
-   "precision": 0.7461237635150679,
-   "recall": 0.7106887462156801,
-   "f1-score": 0.7254631094238814,
+   "precision": 0.7197573944832171,
+   "recall": 0.6809068013362564,
+   "f1-score": 0.6960997877707924,
    "support": 197.0
   },
   "weighted avg": {
-   "precision": 0.736829530605739,
-   "recall": 0.7360406091370558,
-   "f1-score": 0.7336673534419862,
+   "precision": 0.7117454742371869,
+   "recall": 0.7106598984771574,
+   "f1-score": 0.7069590894206351,
    "support": 197.0
   }
  },
@@ -118,8 +118,8 @@
   {
    "group": "198B",
    "n": 69,
-   "accuracy": 0.7681159420289855,
-   "macro_f1": 0.7641012743125418
+   "accuracy": 0.6956521739130435,
+   "macro_f1": 0.6865929969378245
   },
   {
    "group": "207B",
@@ -141,12 +141,12 @@
   }
  ],
  "lowo": {
-  "pooled_macro_f1": 0.7034556087187666,
-  "fold_mean": 0.6038393372956011,
-  "fold_sd": 0.18298795153112876,
-  "n_features_mean": 45.166666666666664,
-  "n_features_min": 41.0,
-  "n_features_max": 47.0
+  "pooled_macro_f1": 0.6705221193136371,
+  "fold_mean": 0.6042017143469048,
+  "fold_sd": 0.15607502898503933,
+  "n_features_mean": 42.666666666666664,
+  "n_features_min": 37.0,
+  "n_features_max": 45.0
  },
  "folds_lowo": [
   {
@@ -156,12 +156,12 @@
    ],
    "n_train": 175,
    "n_test": 22,
-   "n_features": 46,
-   "macro_f1": 0.3958974358974359,
+   "n_features": 45,
+   "macro_f1": 0.4755799755799755,
    "accuracy": 0.5909090909090909,
-   "F1[healthy glands]": 0.88,
+   "F1[healthy glands]": 0.8333333333333334,
    "F1[invasive tumor]": 0.3076923076923077,
-   "F1[tumor-associated stroma]": 0.0
+   "F1[tumor-associated stroma]": 0.2857142857142857
   },
   {
    "fold": 2,
@@ -170,7 +170,7 @@
    ],
    "n_train": 178,
    "n_test": 19,
-   "n_features": 46,
+   "n_features": 45,
    "macro_f1": 0.47384615384615386,
    "accuracy": 0.5263157894736842,
    "F1[healthy glands]": 0.0,
@@ -184,12 +184,12 @@
    ],
    "n_train": 128,
    "n_test": 69,
-   "n_features": 41,
-   "macro_f1": 0.7641012743125418,
-   "accuracy": 0.7681159420289855,
-   "F1[healthy glands]": 0.6285714285714286,
-   "F1[invasive tumor]": 0.7887323943661971,
-   "F1[tumor-associated stroma]": 0.875
+   "n_features": 37,
+   "macro_f1": 0.6865929969378245,
+   "accuracy": 0.6956521739130435,
+   "F1[healthy glands]": 0.5714285714285714,
+   "F1[invasive tumor]": 0.7297297297297297,
+   "F1[tumor-associated stroma]": 0.7586206896551724
   },
   {
    "fold": 4,
@@ -198,7 +198,7 @@
    ],
    "n_train": 138,
    "n_test": 59,
-   "n_features": 44,
+   "n_features": 41,
    "macro_f1": 0.6424242424242425,
    "accuracy": 0.711864406779661,
    "F1[healthy glands]": 0.0,
@@ -212,7 +212,7 @@
    ],
    "n_train": 191,
    "n_test": 6,
-   "n_features": 47,
+   "n_features": 45,
    "macro_f1": 0.4857142857142857,
    "accuracy": 0.5,
    "F1[healthy glands]": 0.0,
@@ -226,7 +226,7 @@
    ],
    "n_train": 175,
    "n_test": 22,
-   "n_features": 47,
+   "n_features": 43,
    "macro_f1": 0.8610526315789473,
    "accuracy": 0.8636363636363636,
    "F1[healthy glands]": 0.0,
@@ -236,133 +236,133 @@
  ],
  "report_lowo": {
   "healthy glands": {
-   "precision": 0.7857142857142857,
-   "recall": 0.6875,
-   "f1-score": 0.7333333333333333,
+   "precision": 0.7407407407407407,
+   "recall": 0.625,
+   "f1-score": 0.6779661016949152,
    "support": 32.0
   },
   "invasive tumor": {
-   "precision": 0.7008547008547008,
-   "recall": 0.7961165048543689,
-   "f1-score": 0.7454545454545455,
+   "precision": 0.675,
+   "recall": 0.7864077669902912,
+   "f1-score": 0.726457399103139,
    "support": 103.0
   },
   "tumor-associated stroma": {
-   "precision": 0.6923076923076923,
-   "recall": 0.5806451612903226,
-   "f1-score": 0.631578947368421,
+   "precision": 0.68,
+   "recall": 0.5483870967741935,
+   "f1-score": 0.6071428571428571,
    "support": 62.0
   },
-  "accuracy": 0.7106598984771574,
+  "accuracy": 0.6852791878172588,
   "macro avg": {
-   "precision": 0.7262922262922263,
-   "recall": 0.6880872220482305,
-   "f1-score": 0.7034556087187666,
+   "precision": 0.6985802469135803,
+   "recall": 0.6532649545881616,
+   "f1-score": 0.6705221193136371,
    "support": 197.0
   },
   "weighted avg": {
-   "precision": 0.711949077431311,
-   "recall": 0.7106598984771574,
-   "f1-score": 0.7076465968798323,
+   "precision": 0.6872523030644858,
+   "recall": 0.6852791878172588,
+   "f1-score": 0.6810298705823236,
    "support": 197.0
   }
  },
  "top_features": {
   "mean_importance": {
-   "glcm_Contrast": 0.0462,
-   "glcm_ClusterProminence": 0.0392,
-   "glszm_SmallAreaEmphasis": 0.0333,
-   "glcm_Imc1": 0.0319,
-   "firstorder_Kurtosis": 0.03,
-   "firstorder_90Percentile": 0.0291,
-   "glcm_JointEnergy": 0.0291,
-   "firstorder_RobustMeanAbsoluteDeviation": 0.0283,
-   "glcm_DifferenceEntropy": 0.0278,
-   "ngtdm_Contrast": 0.0271,
-   "glszm_LargeAreaLowGrayLevelEmphasis": 0.027,
-   "firstorder_10Percentile": 0.0267,
-   "glszm_SizeZoneNonUniformityNormalized": 0.0265,
-   "glcm_ClusterShade": 0.0264,
-   "firstorder_Skewness": 0.0256
+   "glcm_DifferenceVariance": 0.0463,
+   "firstorder_90Percentile": 0.0347,
+   "glcm_DifferenceEntropy": 0.0332,
+   "firstorder_10Percentile": 0.0328,
+   "glcm_SumEntropy": 0.0317,
+   "firstorder_Kurtosis": 0.0315,
+   "glszm_SmallAreaEmphasis": 0.031,
+   "glcm_ClusterProminence": 0.03,
+   "gldm_SmallDependenceEmphasis": 0.0285,
+   "glcm_Imc1": 0.0284,
+   "glcm_ClusterShade": 0.0283,
+   "glszm_LargeAreaLowGrayLevelEmphasis": 0.028,
+   "firstorder_InterquartileRange": 0.0275,
+   "glcm_Contrast": 0.0269,
+   "firstorder_Skewness": 0.0241
   },
   "folds_selected": {
-   "glcm_Contrast": 3,
-   "glcm_ClusterProminence": 3,
-   "glszm_SmallAreaEmphasis": 3,
-   "glcm_Imc1": 3,
-   "firstorder_Kurtosis": 3,
+   "glcm_DifferenceVariance": 2,
    "firstorder_90Percentile": 3,
-   "glcm_JointEnergy": 2,
-   "firstorder_RobustMeanAbsoluteDeviation": 2,
    "glcm_DifferenceEntropy": 2,
-   "ngtdm_Contrast": 3,
-   "glszm_LargeAreaLowGrayLevelEmphasis": 2,
    "firstorder_10Percentile": 2,
-   "glszm_SizeZoneNonUniformityNormalized": 3,
+   "glcm_SumEntropy": 2,
+   "firstorder_Kurtosis": 3,
+   "glszm_SmallAreaEmphasis": 3,
+   "glcm_ClusterProminence": 2,
+   "gldm_SmallDependenceEmphasis": 3,
+   "glcm_Imc1": 3,
    "glcm_ClusterShade": 3,
+   "glszm_LargeAreaLowGrayLevelEmphasis": 2,
+   "firstorder_InterquartileRange": 2,
+   "glcm_Contrast": 1,
    "firstorder_Skewness": 3
   }
  },
  "class_profile": {
-  "glcm_Contrast": {
-   "healthy glands": 0.654,
-   "invasive tumor": -0.138,
-   "tumor-associated stroma": -0.11
-  },
-  "glcm_ClusterProminence": {
-   "healthy glands": 1.24,
-   "invasive tumor": -0.025,
-   "tumor-associated stroma": -0.608
-  },
-  "glszm_SmallAreaEmphasis": {
-   "healthy glands": 0.33,
-   "invasive tumor": -0.102,
-   "tumor-associated stroma": -0.001
-  },
-  "glcm_Imc1": {
-   "healthy glands": 0.173,
-   "invasive tumor": -0.383,
-   "tumor-associated stroma": 0.556
-  },
-  "firstorder_Kurtosis": {
-   "healthy glands": -0.371,
-   "invasive tumor": -0.2,
-   "tumor-associated stroma": 0.524
+  "glcm_DifferenceVariance": {
+   "healthy glands": 0.948,
+   "invasive tumor": -0.133,
+   "tumor-associated stroma": -0.273
   },
   "firstorder_90Percentile": {
-   "healthy glands": 0.589,
-   "invasive tumor": -0.252,
-   "tumor-associated stroma": 0.114
-  },
-  "glcm_JointEnergy": {
-   "healthy glands": -0.431,
-   "invasive tumor": -0.211,
-   "tumor-associated stroma": 0.583
-  },
-  "firstorder_RobustMeanAbsoluteDeviation": {
-   "healthy glands": 0.875,
-   "invasive tumor": 0.214,
-   "tumor-associated stroma": -0.807
+   "healthy glands": 0.598,
+   "invasive tumor": -0.24,
+   "tumor-associated stroma": 0.089
   },
   "glcm_DifferenceEntropy": {
-   "healthy glands": 0.888,
-   "invasive tumor": -0.025,
-   "tumor-associated stroma": -0.423
-  },
-  "ngtdm_Contrast": {
-   "healthy glands": -0.004,
-   "invasive tumor": -0.085,
-   "tumor-associated stroma": 0.146
-  },
-  "glszm_LargeAreaLowGrayLevelEmphasis": {
-   "healthy glands": -0.452,
-   "invasive tumor": 0.075,
-   "tumor-associated stroma": 0.108
+   "healthy glands": 0.916,
+   "invasive tumor": -0.013,
+   "tumor-associated stroma": -0.459
   },
   "firstorder_10Percentile": {
-   "healthy glands": -0.477,
-   "invasive tumor": -0.347,
-   "tumor-associated stroma": 0.823
+   "healthy glands": -0.474,
+   "invasive tumor": -0.345,
+   "tumor-associated stroma": 0.819
+  },
+  "glcm_SumEntropy": {
+   "healthy glands": 0.652,
+   "invasive tumor": 0.239,
+   "tumor-associated stroma": -0.746
+  },
+  "firstorder_Kurtosis": {
+   "healthy glands": -0.361,
+   "invasive tumor": -0.188,
+   "tumor-associated stroma": 0.499
+  },
+  "glszm_SmallAreaEmphasis": {
+   "healthy glands": 0.335,
+   "invasive tumor": -0.077,
+   "tumor-associated stroma": -0.044
+  },
+  "glcm_ClusterProminence": {
+   "healthy glands": 1.244,
+   "invasive tumor": -0.026,
+   "tumor-associated stroma": -0.609
+  },
+  "gldm_SmallDependenceEmphasis": {
+   "healthy glands": 0.011,
+   "invasive tumor": -0.203,
+   "tumor-associated stroma": 0.331
+  },
+  "glcm_Imc1": {
+   "healthy glands": 0.179,
+   "invasive tumor": -0.37,
+   "tumor-associated stroma": 0.531
+  },
+  "glcm_ClusterShade": {
+   "healthy glands": -0.828,
+   "invasive tumor": 0.342,
+   "tumor-associated stroma": -0.144
+  },
+  "glszm_LargeAreaLowGrayLevelEmphasis": {
+   "healthy glands": -0.449,
+   "invasive tumor": 0.079,
+   "tumor-associated stroma": 0.101
   }
  },
  "ablation": [
@@ -370,57 +370,57 @@
    "feature_set": "basic morphology/intensity (10)",
    "n_input": 10,
    "n_kept": "8-9",
-   "fold_macro_f1": "0.657 +/- 0.047",
-   "pooled_macro_f1": 0.657
+   "fold_macro_f1": "0.657 +/- 0.032",
+   "pooled_macro_f1": 0.651
   },
   {
    "feature_set": "first-order only",
    "n_input": 19,
    "n_kept": "9-11",
-   "fold_macro_f1": "0.675 +/- 0.042",
-   "pooled_macro_f1": 0.679
+   "fold_macro_f1": "0.677 +/- 0.040",
+   "pooled_macro_f1": 0.676
   },
   {
    "feature_set": "shape2D only",
    "n_input": 10,
-   "n_kept": "6-7",
-   "fold_macro_f1": "0.509 +/- 0.098",
-   "pooled_macro_f1": 0.522
+   "n_kept": "5-6",
+   "fold_macro_f1": "0.527 +/- 0.151",
+   "pooled_macro_f1": 0.538
   },
   {
    "feature_set": "texture only (GLCM, GLRLM, GLSZM, NGTDM, GLDM)",
-   "n_input": 75,
-   "n_kept": "30-33",
-   "fold_macro_f1": "0.687 +/- 0.063",
-   "pooled_macro_f1": 0.682
+   "n_input": 74,
+   "n_kept": "28-31",
+   "fold_macro_f1": "0.712 +/- 0.080",
+   "pooled_macro_f1": 0.711
   },
   {
    "feature_set": "first-order + shape2D",
    "n_input": 29,
-   "n_kept": "15-17",
-   "fold_macro_f1": "0.673 +/- 0.030",
-   "pooled_macro_f1": 0.676
+   "n_kept": "13-16",
+   "fold_macro_f1": "0.661 +/- 0.027",
+   "pooled_macro_f1": 0.663
   },
   {
    "feature_set": "first-order + texture (no shape)",
-   "n_input": 94,
-   "n_kept": "38-40",
-   "fold_macro_f1": "0.700 +/- 0.051",
-   "pooled_macro_f1": 0.702
+   "n_input": 93,
+   "n_kept": "34-39",
+   "fold_macro_f1": "0.694 +/- 0.032",
+   "pooled_macro_f1": 0.694
   },
   {
    "feature_set": "all 2D features (default output)",
-   "n_input": 104,
-   "n_kept": "41-46",
-   "fold_macro_f1": "0.720 +/- 0.069",
-   "pooled_macro_f1": 0.725
+   "n_input": 103,
+   "n_kept": "37-43",
+   "fold_macro_f1": "0.694 +/- 0.057",
+   "pooled_macro_f1": 0.696
   },
   {
    "feature_set": "all 2D + legacy 3D-named shape",
-   "n_input": 120,
-   "n_kept": "42-48",
-   "fold_macro_f1": "0.702 +/- 0.086",
-   "pooled_macro_f1": 0.714
+   "n_input": 119,
+   "n_kept": "40-46",
+   "fold_macro_f1": "0.692 +/- 0.083",
+   "pooled_macro_f1": 0.701
   }
  ],
  "legacy_shape_selected_folds": {
@@ -437,14 +437,14 @@
   "shape_MinorAxisLength": 0,
   "shape_SphericalDisproportion": 0,
   "shape_Sphericity": 0,
-  "shape_SurfaceArea": 0,
+  "shape_SurfaceArea": 1,
   "shape_SurfaceVolumeRatio": 0,
   "shape_VoxelVolume": 0
  },
  "versions": {
   "qurad": "0.3.0 (archived feature tables)",
-  "sklearn": "1.6.1",
-  "numpy": "2.2.6",
+  "sklearn": "1.7.2",
+  "numpy": "1.26.4",
   "umap": "0.5.11"
  },
  "seed": 0,

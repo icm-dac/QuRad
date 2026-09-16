@@ -1,0 +1,66 @@
+{
+  "software": "QuRad",
+  "version": "0.4.0",
+  "qupathVersion": "0.7.0",
+  "image": "training_set_primary_roi_012.tif",
+  "imageWidth": 1024,
+  "imageHeight": 1024,
+  "isRGB": true,
+  "pixelWidth_um": 0.22632114971144054,
+  "pixelHeight_um": 0.22632114971144054,
+  "grayscale": "floor((299 R + 587 G + 114 B) / 1000) on 8-bit RGB",
+  "binWidth": 25,
+  "voxelArrayShift": 0,
+  "force2D": true,
+  "glcmDistance_px": 1,
+  "glcmAngles": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      -1,
+      1
+    ]
+  ],
+  "glrlmAngles": [
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      -1
+    ]
+  ],
+  "angleAggregation": "matrices summed over angles (PyRadiomics weightingNorm\u003dno_weighting), symmetric GLCM",
+  "maskConvention": "pixel included if its centre lies inside the ROI polygon (Java2D fill, STROKE_PURE, no antialiasing)",
+  "enabledFeatures": {
+    "firstorder": true,
+    "shape2D": true,
+    "glcm": true,
+    "glrlm": true,
+    "glszm": true,
+    "ngtdm": true,
+    "gldm": true,
+    "shape": true
+  },
+  "nObjects": 314,
+  "timestamp": "2026-09-16T17:20:46"
+}

@@ -6,8 +6,6 @@ for tif in /root/QuRad/example_data/puma_subset/training_set_primary_roi_*.tif; 
   tile=$(basename $tif .tif)
   rm -rf $R/puma/$tile; mkdir -p $R/puma/$tile
   ./gradlew headless -q --console=plain -PrunnerArgs="--image $tif --objects /root/QuRad/example_data/puma_subset/${tile}_nuclei.geojson --out $R/puma/$tile/qurad.csv --shape true --masks $R/puma/$tile/masks --timing $R/puma/$tile/timing.csv --grayOut $R/puma/$tile/gray.png" 2>&1 | grep -E "QuRad headless|rror|xception" | sed "s/^/[$tile] /"
-  cp $R/puma/$tile/qurad.csv /root/QuRad/example_data/puma_subset/radiomics/${tile}_tif_radiomics_20260904_000000.csv
-  cp $R/puma/$tile/qurad_settings.json /root/QuRad/example_data/puma_subset/radiomics/${tile}_tif_radiomics_20260904_000000_settings.json
 done
 echo PUMA_DONE
 cd /root/QuRad
