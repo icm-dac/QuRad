@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[28, 28], [68, 28], [68, 68], [28, 68], [28, 28]]]}, "properties": {"objectType": "detection", "name": "two_level", "expected": {"firstorder_Mean": 125, "firstorder_Entropy": 1}}}]}

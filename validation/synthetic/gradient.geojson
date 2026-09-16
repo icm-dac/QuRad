@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [[[0, 30], [96, 30], [96, 50], [0, 50], [0, 30]]]}, "properties": {"objectType": "detection", "name": "gradient_rect", "expected": {"firstorder_Minimum": 0, "firstorder_Maximum": 190, "firstorder_Mean": 95}}}]}

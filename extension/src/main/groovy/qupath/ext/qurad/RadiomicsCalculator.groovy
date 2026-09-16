@@ -4,6 +4,10 @@ import qupath.lib.images.servers.ImageServer
 import qupath.lib.regions.RegionRequest
 import qupath.lib.roi.interfaces.ROI
 import qupath.lib.objects.PathObject
+import qupath.lib.io.GsonTools
+import groovy.transform.CompileStatic
+import java.awt.Color
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.util.Arrays
 
@@ -13,15 +17,46 @@ class RadiomicsCalculator {
 // HELPER: Safe division
 // ============================================================================
 
+def quradVersion() {
+    return '0.4.0'
+}
+
+def metadataKeys() {
+    return ['Image', 'ObjectID', 'ObjectType', 'Classification', 'Centroid_X', 'Centroid_Y', 'NumPixels', 'PixelWidth_um', 'PixelHeight_um']
+}
+
 def safeDiv(num, denom) {
-    return denom != 0 ? num / denom : 0.0
+    return denom != 0 ? num / denom : 0.0d
+}
+
+@CompileStatic
+double percentile(double[] sorted, double p) {
+    int n = sorted.length
+    if (n == 1) return sorted[0]
+    double pos = p / 100.0d * (n - 1)
+    int lo = (int) Math.floor(pos)
+    int hi = Math.min(lo + 1, n - 1)
+    double frac = pos - lo
+    return sorted[lo] + frac * (sorted[hi] - sorted[lo])
+}
+
+@CompileStatic
+long countMaskPixels(boolean[][] mask) {
+    long n = 0
+    for (int y = 0; y < mask.length; y++) {
+        for (int x = 0; x < mask[y].length; x++) {
+            if (mask[y][x]) n++
+        }
+    }
+    return n
 }
 
 // ============================================================================
 // PYRADIOMICS-STYLE BINNING (aligned to multiples of binWidth from 0)
 // ============================================================================
 
-def calculateBinEdges(double[] intensities, int binWidth) {
+@CompileStatic
+List<Number> calculateBinEdges(double[] intensities, int binWidth) {
     if (intensities == null || intensities.length == 0) {
         return []
     }
@@ -36,44 +71,68 @@ def calculateBinEdges(double[] intensities, int binWidth) {
     int highBound = (int)(maximum + 2 * binWidth)
     
     // Generate bin edges
-    def binEdges = []
+    List<Number> binEdges = []
     for (int edge = lowBound; edge <= highBound; edge += binWidth) {
         binEdges.add(edge)
     }
-    
-    // Handle flat region (min == max)
     if (binEdges.size() == 1) {
-        binEdges = [binEdges[0] - 0.5, binEdges[0] + 0.5]
+        double e0 = binEdges[0].doubleValue()
+        binEdges = [e0 - 0.5d, e0 + 0.5d] as List<Number>
     }
-    
     return binEdges
 }
 
-def quantizeValue(double intensity, def binEdges) {
+@CompileStatic
+int quantizeValue(double intensity, List<Number> binEdges) {
     if (binEdges == null || binEdges.size() < 2) {
         return 1
     }
-    
-    // Find which bin this intensity belongs to (using half-open intervals [lower, upper))
-    for (int i = 0; i < binEdges.size() - 1; i++) {
-        if (intensity >= binEdges[i] && intensity < binEdges[i + 1]) {
-            return i + 1  // Bins start at 1
-        }
-    }
-    
-    // If intensity equals the last edge, put it in the last bin
-    if (intensity >= binEdges[binEdges.size() - 1]) {
+    double low = binEdges[0].doubleValue()
+    double width = binEdges[1].doubleValue() - low
+    if (intensity >= binEdges[binEdges.size() - 1].doubleValue()) {
         return binEdges.size()
     }
-    
-    return 1  // Fallback
+    int bin = (int) Math.floor((intensity - low) / width) + 1
+    if (bin < 1) return 1
+    if (bin > binEdges.size() - 1) return binEdges.size() - 1
+    return bin
+}
+
+@CompileStatic
+int[][] quantizeMatrix(int[][] image, boolean[][] mask, List<Number> binEdges) {
+    int h = image.length
+    int w = h > 0 ? image[0].length : 0
+    int[][] quantized = new int[h][w]
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            quantized[y][x] = mask[y][x] ? quantizeValue((double) image[y][x], binEdges) : 0
+        }
+    }
+    return quantized
+}
+
+@CompileStatic
+int maxGrayLevel(int[][] quantized) {
+    int ng = 0
+    for (int y = 0; y < quantized.length; y++) {
+        for (int x = 0; x < quantized[y].length; x++) {
+            if (quantized[y][x] > ng) ng = quantized[y][x]
+        }
+    }
+    return ng
+}
+
+@CompileStatic
+double log2(double v) {
+    return Math.log(v) / Math.log(2)
 }
 
 // ============================================================================
 // FIRST ORDER FEATURES (19 features)
 // ============================================================================
 
-def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges = null) {
+@CompileStatic
+Map calculateFirstOrderFeatures(double[] intensities, Map settings, List<Number> binEdges = null) {
     def features = [:]
     if (intensities == null || intensities.length == 0) return features
     
@@ -81,17 +140,17 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     double[] sorted = intensities.clone()
     Arrays.sort(sorted)
     
-    int shift = settings.voxelArrayShift ?: 0
+    int shift = ((settings.get('voxelArrayShift') ?: 0) as Number).intValue()
     
     // Mean
-    double sum = 0.0
+    double sum = 0.0d
     for (int i = 0; i < n; i++) {
         sum += intensities[i]
     }
     double mean = sum / n
     
     // Energy
-    double energy = 0.0
+    double energy = 0.0d
     for (int i = 0; i < n; i++) {
         double val = intensities[i] + shift
         energy += val * val
@@ -100,7 +159,7 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     features['TotalEnergy'] = energy
     
     // Histogram for entropy - use PyRadiomics-style binning if binEdges provided
-    int binWidth = settings.binWidth ?: 25
+    int binWidth = ((settings.get('binWidth') ?: 25) as Number).intValue()
     int[] hist
     int nBins
     
@@ -128,7 +187,7 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     }
     
     // Entropy
-    double entropy = 0.0
+    double entropy = 0.0d
     for (int i = 0; i < nBins; i++) {
         if (hist[i] > 0) {
             double p = (double) hist[i] / n
@@ -139,25 +198,25 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     
     // Basic statistics
     features['Minimum'] = sorted[0]
-    features['10Percentile'] = sorted[(int)(n * 0.1)]
-    features['90Percentile'] = sorted[(int)(n * 0.9)]
+    features['10Percentile'] = percentile(sorted, 10)
+    features['90Percentile'] = percentile(sorted, 90)
     features['Maximum'] = sorted[n - 1]
     features['Mean'] = mean
-    features['Median'] = sorted[(int)(n / 2)]
-    features['InterquartileRange'] = sorted[(int)(n * 0.75)] - sorted[(int)(n * 0.25)]
+    features['Median'] = percentile(sorted, 50)
+    features['InterquartileRange'] = percentile(sorted, 75) - percentile(sorted, 25)
     features['Range'] = sorted[n - 1] - sorted[0]
     
     // Mean absolute deviation
-    double mad = 0.0
+    double mad = 0.0d
     for (int i = 0; i < n; i++) {
         mad += Math.abs(intensities[i] - mean)
     }
     features['MeanAbsoluteDeviation'] = mad / n
     
     // Robust mean absolute deviation
-    double prcnt10 = sorted[(int)(n * 0.1)]
-    double prcnt90 = sorted[(int)(n * 0.9)]
-    double robustSum = 0.0
+    double prcnt10 = percentile(sorted, 10)
+    double prcnt90 = percentile(sorted, 90)
+    double robustSum = 0.0d
     int robustCount = 0
     for (int i = 0; i < n; i++) {
         if (intensities[i] >= prcnt10 && intensities[i] <= prcnt90) {
@@ -167,7 +226,7 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     }
     if (robustCount > 0) {
         double robustMean = robustSum / robustCount
-        double rmad = 0.0
+        double rmad = 0.0d
         for (int i = 0; i < n; i++) {
             if (intensities[i] >= prcnt10 && intensities[i] <= prcnt90) {
                 rmad += Math.abs(intensities[i] - robustMean)
@@ -181,7 +240,7 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     features['RootMeanSquared'] = Math.sqrt(energy / n)
     
     // Variance and higher moments
-    double variance = 0.0
+    double variance = 0.0d
     for (int i = 0; i < n; i++) {
         double diff = intensities[i] - mean
         variance += diff * diff
@@ -193,8 +252,8 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     features['StandardDeviation'] = stdDev
     
     if (stdDev > 0) {
-        double skewness = 0.0
-        double kurtosis = 0.0
+        double skewness = 0.0d
+        double kurtosis = 0.0d
         for (int i = 0; i < n; i++) {
             double z = (intensities[i] - mean) / stdDev
             skewness += z * z * z
@@ -208,7 +267,7 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
     }
     
     // Uniformity
-    double uniformity = 0.0
+    double uniformity = 0.0d
     for (int i = 0; i < nBins; i++) {
         double p = (double) hist[i] / n
         uniformity += p * p
@@ -222,7 +281,8 @@ def calculateFirstOrderFeatures(double[] intensities, Map settings, def binEdges
 // SHAPE FEATURES - 2D (10 features)
 // ============================================================================
 
-def computeAxisLengths(boolean[][] mask) {
+@CompileStatic
+double[] computeAxisLengths(boolean[][] mask) {
     double sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0
     long n = 0
     for (int y = 0; y < mask.length; y++) {
@@ -234,44 +294,63 @@ def computeAxisLengths(boolean[][] mask) {
             }
         }
     }
-    if (n < 2) return [0.0, 0.0, 0.0]
+    if (n < 1) return [0.0d, 0.0d, 0.0d] as double[]
     double mx = sx / n, my = sy / n
-    double denom = n - 1
+    double denom = n
     double cxx = (sxx - n * mx * mx) / denom
     double cyy = (syy - n * my * my) / denom
     double cxy = (sxy - n * mx * my) / denom
     double tr = cxx + cyy
     double det = cxx * cyy - cxy * cxy
-    double disc = Math.sqrt(Math.max(0.0, tr * tr / 4.0 - det))
-    double l1 = tr / 2.0 + disc
-    double l2 = tr / 2.0 - disc
-    if (l2 < 0) l2 = 0.0
-    double major = 4.0 * Math.sqrt(l1)
-    double minor = 4.0 * Math.sqrt(l2)
-    double elong = l1 > 0 ? Math.sqrt(l2 / l1) : 0.0
-    return [major, minor, elong]
+    double disc = Math.sqrt(Math.max(0.0d, tr * tr / 4.0d - det))
+    double l1 = tr / 2.0d + disc
+    double l2 = tr / 2.0d - disc
+    if (l2 < 0) l2 = 0.0d
+    double major = 4.0d * Math.sqrt(l1)
+    double minor = 4.0d * Math.sqrt(l2)
+    double elong = l1 > 0 ? Math.sqrt(l2 / l1) : 0.0d
+    return [major, minor, elong] as double[]
 }
 
-def calculateShape2DFeatures(ROI roi, boolean[][] mask) {
+@CompileStatic
+double computeMaximumDiameter(ROI roi) {
+    ROI hull = roi.getConvexHull()
+    List<qupath.lib.geom.Point2> points = (hull != null && !hull.isEmpty()) ? hull.getAllPoints() : roi.getAllPoints()
+    double maxD2 = 0.0d
+    int n = points.size()
+    for (int i = 0; i < n; i++) {
+        def pi = points[i]
+        for (int j = i + 1; j < n; j++) {
+            def pj = points[j]
+            double dx = pi.getX() - pj.getX()
+            double dy = pi.getY() - pj.getY()
+            double d2 = dx * dx + dy * dy
+            if (d2 > maxD2) maxD2 = d2
+        }
+    }
+    return Math.sqrt(maxD2)
+}
+
+@CompileStatic
+Map calculateShape2DFeatures(ROI roi, boolean[][] mask) {
     def features = [:]
     double area = roi.getArea()
     double perimeter = roi.getLength()
 
-    features['MeshSurfaceArea'] = area
-    features['PixelSurface'] = area
+    features['MeshSurface'] = area
+    features['PixelSurface'] = (double) countMaskPixels(mask)
     features['Perimeter'] = perimeter
     features['PerimeterSurfaceRatio'] = area > 0 ? perimeter / area : 0.0
 
-    double sphericity = perimeter > 0 ? (4.0 * Math.PI * area) / (perimeter * perimeter) : 0.0
+    double sphericity = perimeter > 0 ? 2.0d * Math.sqrt(Math.PI * area) / perimeter : 0.0d
     features['Sphericity'] = sphericity
     features['SphericalDisproportion'] = sphericity > 0 ? 1.0 / sphericity : 0.0
+    features['MaximumDiameter'] = computeMaximumDiameter(roi)
 
-    def (major, minor, elong) = computeAxisLengths(mask)
-
-    features['MajorAxisLength'] = major
-    features['MinorAxisLength'] = minor
-    features['Elongation'] = elong
-    features['Flatness'] = elong
+    double[] axes = computeAxisLengths(mask)
+    features['MajorAxisLength'] = axes[0]
+    features['MinorAxisLength'] = axes[1]
+    features['Elongation'] = axes[2]
 
     return features
 }
@@ -280,30 +359,31 @@ def calculateShape2DFeatures(ROI roi, boolean[][] mask) {
 // SHAPE FEATURES - 3D (16 features)
 // ============================================================================
 
-def calculateShape3DFeatures(ROI roi, boolean[][] mask) {
+@CompileStatic
+Map calculateShape3DFeatures(ROI roi, boolean[][] mask) {
     def features = [:]
     double area = roi.getArea()
     double perimeter = roi.getLength()
 
-    features['VoxelVolume'] = area
+    features['VoxelVolume'] = (double) countMaskPixels(mask)
     features['MeshVolume'] = area
     features['SurfaceArea'] = perimeter
     features['SurfaceVolumeRatio'] = area > 0 ? perimeter / area : 0.0
 
-    double sphericity = perimeter > 0 ? (4.0 * Math.PI * area) / (perimeter * perimeter) : 0.0
+    double sphericity = perimeter > 0 ? 2.0d * Math.sqrt(Math.PI * area) / perimeter : 0.0d
     features['Sphericity'] = sphericity
     features['Compactness1'] = perimeter > 0 ? area / Math.sqrt(Math.PI * perimeter * perimeter * perimeter) : 0.0
     features['Compactness2'] = perimeter > 0 ? 36.0 * Math.PI * area * area / (perimeter * perimeter * perimeter) : 0.0
     features['SphericalDisproportion'] = sphericity > 0 ? 1.0 / sphericity : 0.0
 
-    double width = roi.getBoundsWidth()
-    double height = roi.getBoundsHeight()
-    def (major, minor, elong) = computeAxisLengths(mask)
+    double maxDiameter = computeMaximumDiameter(roi)
+    double[] axes = computeAxisLengths(mask)
+    double major = axes[0], minor = axes[1], elong = axes[2]
 
-    features['Maximum3DDiameter'] = Math.sqrt(width * width + height * height)
-    features['Maximum2DDiameterSlice'] = features['Maximum3DDiameter']
-    features['Maximum2DDiameterColumn'] = width
-    features['Maximum2DDiameterRow'] = height
+    features['Maximum3DDiameter'] = maxDiameter
+    features['Maximum2DDiameterSlice'] = maxDiameter
+    features['Maximum2DDiameterColumn'] = roi.getBoundsWidth()
+    features['Maximum2DDiameterRow'] = roi.getBoundsHeight()
     features['MajorAxisLength'] = major
     features['MinorAxisLength'] = minor
     features['LeastAxisLength'] = minor
@@ -316,127 +396,105 @@ def calculateShape3DFeatures(ROI roi, boolean[][] mask) {
 // GLCM FEATURES (23 features)
 // ============================================================================
 
-def buildGLCM(int[][] image, boolean[][] mask, int distance, def binEdges) {
-    def glcm = [:]
-    int height = image.length
-    if (height == 0) return glcm
-    int width = image[0].length
-    if (width == 0) return glcm
-    
-    int[][] angles = [[1,0], [1,1], [0,1], [-1,1]]
-    
+@CompileStatic
+long[][] buildGLCM(int[][] image, boolean[][] mask, int distance, List<Number> binEdges) {
+    int[][] q = quantizeMatrix(image, mask, binEdges)
+    int ng = maxGrayLevel(q)
+    long[][] glcm = new long[ng + 1][ng + 1]
+    int height = q.length
+    int width = height > 0 ? q[0].length : 0
+    int[][] angles = [[1,0], [1,1], [0,1], [-1,1]] as int[][]
     for (int a = 0; a < 4; a++) {
         int dx = angles[a][0] * distance
         int dy = angles[a][1] * distance
-        
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (!mask[y][x]) continue
-                
+                int i = q[y][x]
+                if (i == 0) continue
                 int nx = x + dx
                 int ny = y + dy
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height && mask[ny][nx]) {
-                    int i = quantizeValue((double)image[y][x], binEdges)
-                    int j = quantizeValue((double)image[ny][nx], binEdges)
-                    String key1 = "${i},${j}"
-                    String key2 = "${j},${i}"
-                    glcm[key1] = (glcm[key1] ?: 0) + 1
-                    glcm[key2] = (glcm[key2] ?: 0) + 1
-                }
+                if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
+                int j = q[ny][nx]
+                if (j == 0) continue
+                glcm[i][j]++
+                glcm[j][i]++
             }
         }
     }
     return glcm
 }
 
-def calculateGLCMFeatures(int[][] image, boolean[][] mask, Map settings, def binEdges) {
+@CompileStatic
+Map calculateGLCMFeatures(int[][] image, boolean[][] mask, Map settings, List<Number> binEdges) {
     def features = [:]
-    
-    def glcm = buildGLCM(image, mask, settings.distances[0], binEdges)
-    if (glcm.isEmpty()) return features
-    
-    double total = 0.0
-    glcm.each { k, v -> total += v }
+    int distance = ((settings.get('distances') as List)[0] as Number).intValue()
+    long[][] glcm = buildGLCM(image, mask, distance, binEdges)
+    int ng = glcm.length - 1
+    if (ng < 1) return features
+
+    double total = 0.0d
+    for (int i = 1; i <= ng; i++) for (int j = 1; j <= ng; j++) total += glcm[i][j]
     if (total == 0) return features
-    
-    // Normalized probabilities
-    def p = [:]
-    glcm.each { k, v -> p[k] = v / total }
-    
-    // Marginal probabilities
-    def px = [:]
-    def py = [:]
-    p.each { key, prob ->
-        def parts = key.split(',')
-        int i = parts[0].toInteger()
-        int j = parts[1].toInteger()
-        px[i] = (px[i] ?: 0.0) + prob
-        py[j] = (py[j] ?: 0.0) + prob
+
+    double[][] p = new double[ng + 1][ng + 1]
+    double[] px = new double[ng + 1]
+    double[] py = new double[ng + 1]
+    for (int i = 1; i <= ng; i++) {
+        for (int j = 1; j <= ng; j++) {
+            p[i][j] = glcm[i][j] / total
+            px[i] += p[i][j]
+            py[j] += p[i][j]
+        }
     }
-    
-    // Mean and std of marginals
-    double ux = 0.0, uy = 0.0
-    px.each { i, pi -> ux += i * pi }
-    py.each { j, pj -> uy += j * pj }
-    
-    double varX = 0.0, varY = 0.0
-    px.each { i, pi -> varX += (i - ux) * (i - ux) * pi }
-    py.each { j, pj -> varY += (j - uy) * (j - uy) * pj }
-    double sx = Math.sqrt(varX > 0 ? varX : 0.001)
-    double sy = Math.sqrt(varY > 0 ? varY : 0.001)
-    
-    // Calculate features
-    double autocorr = 0.0, jointAvg = 0.0, clusterProm = 0.0, clusterShade = 0.0
-    double clusterTend = 0.0, contrast = 0.0, correlation = 0.0
-    double jointEnergy = 0.0, jointEntropy = 0.0
-    double idm = 0.0, idmn = 0.0, id = 0.0, idn = 0.0, invVar = 0.0
-    double maxProb = 0.0, sumSquares = 0.0
-    
-    def pxMinusY = [:]
-    def pxPlusY = [:]
-    
-    int maxGL = 1
-    px.each { i, pi -> if (i > maxGL) maxGL = i }
-    py.each { j, pj -> if (j > maxGL) maxGL = j }
-    double ng = maxGL
-    
-    p.each { key, prob ->
-        def parts = key.split(',')
-        int i = parts[0].toInteger()
-        int j = parts[1].toInteger()
-        
-        autocorr += i * j * prob
-        clusterProm += Math.pow(i + j - ux - uy, 4) * prob
-        clusterShade += Math.pow(i + j - ux - uy, 3) * prob
-        clusterTend += Math.pow(i + j - ux - uy, 2) * prob
-        contrast += (i - j) * (i - j) * prob
-        correlation += (i - ux) * (j - uy) * prob / (sx * sy)
-        
-        jointEnergy += prob * prob
-        if (prob > 0) jointEntropy -= prob * Math.log(prob) / Math.log(2)
-        
-        idm += prob / (1 + (i - j) * (i - j))
-        idmn += prob / (1 + ((i - j) * (i - j)) / (ng * ng))
-        id += prob / (1 + Math.abs(i - j))
-        idn += prob / (1 + Math.abs(i - j) / ng)
-        if (i != j) invVar += prob / ((i - j) * (i - j))
-        
-        if (prob > maxProb) maxProb = prob
-        sumSquares += (i - ux) * (i - ux) * prob
-        
-        int diffKey = Math.abs(i - j)
-        pxMinusY[diffKey] = (pxMinusY[diffKey] ?: 0.0) + prob
-        int sumKey = i + j
-        pxPlusY[sumKey] = (pxPlusY[sumKey] ?: 0.0) + prob
+
+    double ux = 0.0d, uy = 0.0d
+    for (int i = 1; i <= ng; i++) { ux += i * px[i]; uy += i * py[i] }
+    double varX = 0.0d, varY = 0.0d
+    for (int i = 1; i <= ng; i++) { varX += (i - ux) * (i - ux) * px[i]; varY += (i - uy) * (i - uy) * py[i] }
+    double sx = Math.sqrt(varX)
+    double sy = Math.sqrt(varY)
+    boolean degenerateCorrelation = sx * sy == 0
+
+    double autocorr = 0.0d, clusterProm = 0.0d, clusterShade = 0.0d, clusterTend = 0.0d
+    double contrast = 0.0d, correlation = 0.0d, jointEnergy = 0.0d, jointEntropy = 0.0d
+    double idm = 0.0d, idmn = 0.0d, id = 0.0d, idn = 0.0d, invVar = 0.0d, maxProb = 0.0d, sumSquares = 0.0d
+    double[] pxMinusY = new double[ng]
+    double[] pxPlusY = new double[2 * ng + 1]
+    double ngd = ng
+
+    for (int i = 1; i <= ng; i++) {
+        for (int j = 1; j <= ng; j++) {
+            double prob = p[i][j]
+            if (prob == 0) continue
+            autocorr += i * j * prob
+            double c = i + j - ux - uy
+            clusterProm += c * c * c * c * prob
+            clusterShade += c * c * c * prob
+            clusterTend += c * c * prob
+            int d = i - j
+            contrast += d * d * prob
+            if (!degenerateCorrelation) correlation += (i - ux) * (j - uy) * prob / (sx * sy)
+            jointEnergy += prob * prob
+            jointEntropy -= prob * log2(prob)
+            idm += prob / (1 + d * d)
+            idmn += prob / (1 + (d * d) / (ngd * ngd))
+            id += prob / (1 + Math.abs(d))
+            idn += prob / (1 + Math.abs(d) / ngd)
+            if (d != 0) invVar += prob / (d * d)
+            if (prob > maxProb) maxProb = prob
+            sumSquares += (i - ux) * (i - ux) * prob
+            pxMinusY[Math.abs(d)] += prob
+            pxPlusY[i + j] += prob
+        }
     }
-    
+
     features['Autocorrelation'] = autocorr
     features['JointAverage'] = ux
     features['ClusterProminence'] = clusterProm
     features['ClusterShade'] = clusterShade
     features['ClusterTendency'] = clusterTend
     features['Contrast'] = contrast
-    features['Correlation'] = correlation
+    features['Correlation'] = degenerateCorrelation ? 1.0 : correlation
     features['JointEnergy'] = jointEnergy
     features['JointEntropy'] = jointEntropy
     features['Idm'] = idm
@@ -446,50 +504,47 @@ def calculateGLCMFeatures(int[][] image, boolean[][] mask, Map settings, def bin
     features['InverseVariance'] = invVar
     features['MaximumProbability'] = maxProb
     features['SumSquares'] = sumSquares
-    
-    // Difference features
-    double diffAvg = 0.0, diffEntropy = 0.0, diffVar = 0.0
-    pxMinusY.each { k, pk ->
+
+    double diffAvg = 0.0d, diffEntropy = 0.0d, diffVar = 0.0d
+    for (int k = 0; k < ng; k++) {
+        double pk = pxMinusY[k]
+        if (pk == 0) continue
         diffAvg += k * pk
-        if (pk > 0) diffEntropy -= pk * Math.log(pk) / Math.log(2)
+        diffEntropy -= pk * log2(pk)
     }
-    pxMinusY.each { k, pk -> diffVar += (k - diffAvg) * (k - diffAvg) * pk }
-    
+    for (int k = 0; k < ng; k++) diffVar += (k - diffAvg) * (k - diffAvg) * pxMinusY[k]
     features['DifferenceAverage'] = diffAvg
     features['DifferenceEntropy'] = diffEntropy
     features['DifferenceVariance'] = diffVar
-    
-    // Sum features
-    double sumAvg = 0.0, sumEntropy = 0.0
-    pxPlusY.each { k, pk ->
+
+    double sumAvg = 0.0d, sumEntropy = 0.0d
+    for (int k = 2; k <= 2 * ng; k++) {
+        double pk = pxPlusY[k]
+        if (pk == 0) continue
         sumAvg += k * pk
-        if (pk > 0) sumEntropy -= pk * Math.log(pk) / Math.log(2)
+        sumEntropy -= pk * log2(pk)
     }
-    
     features['SumAverage'] = sumAvg
     features['SumEntropy'] = sumEntropy
-    
-    // IMC features
-    double hx = 0.0, hy = 0.0
-    px.each { i, pi -> if (pi > 0) hx -= pi * Math.log(pi) / Math.log(2) }
-    py.each { j, pj -> if (pj > 0) hy -= pj * Math.log(pj) / Math.log(2) }
-    
-    double hxy1 = 0.0
-    p.each { key, prob ->
-        def parts = key.split(',')
-        int i = parts[0].toInteger()
-        int j = parts[1].toInteger()
-        double pxi = px[i] ?: 0.0
-        double pyj = py[j] ?: 0.0
-        if (prob > 0 && pxi > 0 && pyj > 0) {
-            hxy1 -= prob * Math.log(pxi * pyj) / Math.log(2)
+
+    double hx = 0.0d, hy = 0.0d, hxy1 = 0.0d, hxy2 = 0.0d
+    for (int i = 1; i <= ng; i++) {
+        if (px[i] > 0) hx -= px[i] * log2(px[i])
+        if (py[i] > 0) hy -= py[i] * log2(py[i])
+    }
+    for (int i = 1; i <= ng; i++) {
+        for (int j = 1; j <= ng; j++) {
+            double pp = px[i] * py[j]
+            if (pp <= 0) continue
+            if (p[i][j] > 0) hxy1 -= p[i][j] * log2(pp)
+            hxy2 -= pp * log2(pp)
         }
     }
-    
     double maxH = Math.max(hx, hy)
     features['Imc1'] = maxH > 0 ? (jointEntropy - hxy1) / maxH : 0.0
-    features['Imc2'] = 0.0
-    
+    double imc2 = 1.0d - Math.exp(-2.0d * (hxy2 - jointEntropy))
+    features['Imc2'] = imc2 > 0 ? Math.sqrt(imc2) : 0.0
+
     return features
 }
 
@@ -497,160 +552,115 @@ def calculateGLCMFeatures(int[][] image, boolean[][] mask, Map settings, def bin
 // GLRLM FEATURES (16 features)
 // ============================================================================
 
-def buildGLRLM(int[][] image, boolean[][] mask, def binEdges) {
-    def glrlm = [:]
-    int height = image.length
-    if (height == 0) return glrlm
-    int width = image[0].length
-    
-    // Quantize using PyRadiomics-style binning
-    int[][] quantized = new int[height][width]
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            quantized[y][x] = mask[y][x] ? quantizeValue((double)image[y][x], binEdges) : -1
-        }
-    }
-    
-    // Horizontal runs
-    for (int y = 0; y < height; y++) {
-        int gl = -1
-        int len = 0
-        for (int x = 0; x < width; x++) {
-            int g = quantized[y][x]
-            if (g < 0) {
-                if (len > 0) {
-                    String key = "${gl},${len}"
-                    glrlm[key] = (glrlm[key] ?: 0) + 1
+@CompileStatic
+long[][] buildGLRLM(int[][] image, boolean[][] mask, List<Number> binEdges) {
+    int[][] q = quantizeMatrix(image, mask, binEdges)
+    int ng = maxGrayLevel(q)
+    int height = q.length
+    int width = height > 0 ? q[0].length : 0
+    int maxRun = Math.max(width, height)
+    long[][] glrlm = new long[ng + 1][maxRun + 1]
+    int[][] directions = [[1,0], [0,1], [1,1], [1,-1]] as int[][]
+    for (int d = 0; d < 4; d++) {
+        int dx = directions[d][0]
+        int dy = directions[d][1]
+        for (int y0 = 0; y0 < height; y0++) {
+            for (int x0 = 0; x0 < width; x0++) {
+                int px = x0 - dx
+                int py = y0 - dy
+                if (px >= 0 && px < width && py >= 0 && py < height) continue
+                int gl = 0
+                int len = 0
+                int x = x0
+                int y = y0
+                while (x >= 0 && x < width && y >= 0 && y < height) {
+                    int g = q[y][x]
+                    if (g == 0) {
+                        if (len > 0) glrlm[gl][len]++
+                        gl = 0
+                        len = 0
+                    } else if (g == gl) {
+                        len++
+                    } else {
+                        if (len > 0) glrlm[gl][len]++
+                        gl = g
+                        len = 1
+                    }
+                    x += dx
+                    y += dy
                 }
-                gl = -1
-                len = 0
-            } else if (g == gl) {
-                len++
-            } else {
-                if (len > 0) {
-                    String key = "${gl},${len}"
-                    glrlm[key] = (glrlm[key] ?: 0) + 1
-                }
-                gl = g
-                len = 1
+                if (len > 0) glrlm[gl][len]++
             }
         }
-        if (len > 0) {
-            String key = "${gl},${len}"
-            glrlm[key] = (glrlm[key] ?: 0) + 1
-        }
     }
-    
-    // Vertical runs
-    for (int x = 0; x < width; x++) {
-        int gl = -1
-        int len = 0
-        for (int y = 0; y < height; y++) {
-            int g = quantized[y][x]
-            if (g < 0) {
-                if (len > 0) {
-                    String key = "${gl},${len}"
-                    glrlm[key] = (glrlm[key] ?: 0) + 1
-                }
-                gl = -1
-                len = 0
-            } else if (g == gl) {
-                len++
-            } else {
-                if (len > 0) {
-                    String key = "${gl},${len}"
-                    glrlm[key] = (glrlm[key] ?: 0) + 1
-                }
-                gl = g
-                len = 1
-            }
-        }
-        if (len > 0) {
-            String key = "${gl},${len}"
-            glrlm[key] = (glrlm[key] ?: 0) + 1
-        }
-    }
-    
     return glrlm
 }
 
-def calculateGLRLMFeatures(int[][] image, boolean[][] mask, Map settings, def binEdges) {
+@CompileStatic
+Map calculateGLRLMFeatures(int[][] image, boolean[][] mask, Map settings, List<Number> binEdges) {
     def features = [:]
-    
-    def glrlm = buildGLRLM(image, mask, binEdges)
-    if (glrlm.isEmpty()) return features
-    
-    double totalRuns = 0.0
-    glrlm.each { k, v -> totalRuns += v }
+    long[][] glrlm = buildGLRLM(image, mask, binEdges)
+    int ng = glrlm.length - 1
+    if (ng < 1) return features
+    int maxRun = glrlm[0].length - 1
+
+    double totalRuns = 0.0d
+    for (int i = 1; i <= ng; i++) for (int j = 1; j <= maxRun; j++) totalRuns += glrlm[i][j]
     if (totalRuns == 0) return features
-    
-    // Count valid pixels
-    int np = 0
-    for (int y = 0; y < mask.length; y++) {
-        for (int x = 0; x < mask[0].length; x++) {
-            if (mask[y][x]) np++
+
+    double sre = 0.0d, lre = 0.0d, lgre = 0.0d, hgre = 0.0d
+    double srlge = 0.0d, srhge = 0.0d, lrlge = 0.0d, lrhge = 0.0d
+    double glMean = 0.0d, rlMean = 0.0d, runEntropy = 0.0d, runPixels = 0.0d
+    double[] glCounts = new double[ng + 1]
+    double[] rlCounts = new double[maxRun + 1]
+
+    for (int gl = 1; gl <= ng; gl++) {
+        for (int rl = 1; rl <= maxRun; rl++) {
+            double c = glrlm[gl][rl]
+            if (c == 0) continue
+            runPixels += c * rl
+            sre += c / ((double) rl * rl)
+            lre += c * rl * rl
+            lgre += c / ((double) gl * gl)
+            hgre += c * gl * gl
+            srlge += c / ((double) gl * gl * rl * rl)
+            srhge += c * gl * gl / ((double) rl * rl)
+            lrlge += c * rl * rl / ((double) gl * gl)
+            lrhge += c * gl * gl * rl * rl
+            glMean += gl * c
+            rlMean += rl * c
+            double pr = c / totalRuns
+            runEntropy -= pr * log2(pr)
+            glCounts[gl] += c
+            rlCounts[rl] += c
         }
     }
-    if (np == 0) return features
-    
-    double sre = 0.0, lre = 0.0, lgre = 0.0, hgre = 0.0
-    double srlge = 0.0, srhge = 0.0, lrlge = 0.0, lrhge = 0.0
-    double glMean = 0.0, rlMean = 0.0, runEntropy = 0.0
-    
-    def glCounts = [:]
-    def rlCounts = [:]
-    
-    glrlm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int rl = parts[1].toInteger()
-        double c = count
-        
-        sre += c / (rl * rl)
-        lre += c * rl * rl
-        lgre += c / (gl * gl)
-        hgre += c * gl * gl
-        srlge += c / (gl * gl * rl * rl)
-        srhge += c * gl * gl / (rl * rl)
-        lrlge += c * rl * rl / (gl * gl)
-        lrhge += c * gl * gl * rl * rl
-        
-        glMean += gl * c
-        rlMean += rl * c
-        
-        double p = c / totalRuns
-        if (p > 0) runEntropy -= p * Math.log(p) / Math.log(2)
-        
-        glCounts[gl] = (glCounts[gl] ?: 0.0) + c
-        rlCounts[rl] = (rlCounts[rl] ?: 0.0) + c
-    }
-    
     glMean /= totalRuns
     rlMean /= totalRuns
-    
-    double glVar = 0.0, rlVar = 0.0
-    glrlm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int rl = parts[1].toInteger()
-        double c = count
-        glVar += (gl - glMean) * (gl - glMean) * c
-        rlVar += (rl - rlMean) * (rl - rlMean) * c
+
+    double glVar = 0.0d, rlVar = 0.0d
+    for (int gl = 1; gl <= ng; gl++) {
+        for (int rl = 1; rl <= maxRun; rl++) {
+            double c = glrlm[gl][rl]
+            if (c == 0) continue
+            glVar += (gl - glMean) * (gl - glMean) * c
+            rlVar += (rl - rlMean) * (rl - rlMean) * c
+        }
     }
     glVar /= totalRuns
     rlVar /= totalRuns
-    
-    double glnu = 0.0, rlnu = 0.0
-    glCounts.each { gl, c -> glnu += c * c }
-    rlCounts.each { rl, c -> rlnu += c * c }
-    
+
+    double glnu = 0.0d, rlnu = 0.0d
+    for (int gl = 1; gl <= ng; gl++) glnu += glCounts[gl] * glCounts[gl]
+    for (int rl = 1; rl <= maxRun; rl++) rlnu += rlCounts[rl] * rlCounts[rl]
+
     features['ShortRunEmphasis'] = sre / totalRuns
     features['LongRunEmphasis'] = lre / totalRuns
     features['GrayLevelNonUniformity'] = glnu / totalRuns
     features['GrayLevelNonUniformityNormalized'] = glnu / (totalRuns * totalRuns)
     features['RunLengthNonUniformity'] = rlnu / totalRuns
     features['RunLengthNonUniformityNormalized'] = rlnu / (totalRuns * totalRuns)
-    features['RunPercentage'] = totalRuns / np
+    features['RunPercentage'] = runPixels > 0 ? totalRuns / runPixels : 0.0
     features['GrayLevelVariance'] = glVar
     features['RunVariance'] = rlVar
     features['RunEntropy'] = runEntropy
@@ -660,7 +670,7 @@ def calculateGLRLMFeatures(int[][] image, boolean[][] mask, Map settings, def bi
     features['ShortRunHighGrayLevelEmphasis'] = srhge / totalRuns
     features['LongRunLowGrayLevelEmphasis'] = lrlge / totalRuns
     features['LongRunHighGrayLevelEmphasis'] = lrhge / totalRuns
-    
+
     return features
 }
 
@@ -668,137 +678,125 @@ def calculateGLRLMFeatures(int[][] image, boolean[][] mask, Map settings, def bi
 // GLSZM FEATURES (16 features)
 // ============================================================================
 
-def floodFill(int[][] image, boolean[][] visited, int startX, int startY, int targetGL) {
+@CompileStatic
+int floodFill(int[][] image, boolean[][] visited, int startX, int startY, int targetGL, int[] stack = null) {
     int h = image.length
     int w = image[0].length
-    def stack = [[startX, startY]]
+    if (stack == null) stack = new int[64]
+    int sp = 0
+    stack[sp++] = startX
+    stack[sp++] = startY
     int size = 0
-    
-    while (!stack.isEmpty()) {
-        def point = stack.remove(stack.size() - 1)
-        int cx = point[0]
-        int cy = point[1]
-        
+    while (sp > 0) {
+        int cy = stack[--sp]
+        int cx = stack[--sp]
         if (cx < 0 || cx >= w || cy < 0 || cy >= h) continue
         if (visited[cy][cx] || image[cy][cx] != targetGL) continue
-        
         visited[cy][cx] = true
         size++
-        
-        stack.add([cx + 1, cy])
-        stack.add([cx - 1, cy])
-        stack.add([cx, cy + 1])
-        stack.add([cx, cy - 1])
-        stack.add([cx + 1, cy + 1])
-        stack.add([cx - 1, cy - 1])
-        stack.add([cx + 1, cy - 1])
-        stack.add([cx - 1, cy + 1])
-    }
-    
-    return size
-}
-
-def buildGLSZM(int[][] image, boolean[][] mask, def binEdges) {
-    def glszm = [:]
-    int h = image.length
-    if (h == 0) return glszm
-    int w = image[0].length
-    
-    // Quantize using PyRadiomics-style binning
-    int[][] quantized = new int[h][w]
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            quantized[y][x] = mask[y][x] ? quantizeValue((double)image[y][x], binEdges) : -1
-        }
-    }
-    
-    boolean[][] visited = new boolean[h][w]
-    
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            if (!visited[y][x] && quantized[y][x] >= 0) {
-                int gl = quantized[y][x]
-                int size = floodFill(quantized, visited, x, y, gl)
-                if (size > 0) {
-                    String key = "${gl},${size}"
-                    glszm[key] = (glszm[key] ?: 0) + 1
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dy == 0) continue
+                int nx = cx + dx
+                int ny = cy + dy
+                if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue
+                if (visited[ny][nx] || image[ny][nx] != targetGL) continue
+                if (sp + 2 > stack.length) {
+                    int[] bigger = new int[stack.length * 2]
+                    System.arraycopy(stack, 0, bigger, 0, sp)
+                    stack = bigger
                 }
+                stack[sp++] = nx
+                stack[sp++] = ny
             }
         }
     }
-    
+    return size
+}
+
+@CompileStatic
+Map<Long, Long> buildGLSZM(int[][] image, boolean[][] mask, List<Number> binEdges) {
+    int[][] q = quantizeMatrix(image, mask, binEdges)
+    int h = q.length
+    int w = h > 0 ? q[0].length : 0
+    boolean[][] visited = new boolean[h][w]
+    def glszm = new HashMap<Long, Long>()
+    int[] stack = new int[Math.max(64, 2 * w * h + 2)]
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            if (visited[y][x] || q[y][x] == 0) continue
+            int gl = q[y][x]
+            int size = floodFill(q, visited, x, y, gl, stack)
+            if (size > 0) {
+                long key = (((long) gl) << 32) | size
+                Long prev = glszm.get(key)
+                glszm.put(key, prev == null ? 1L : prev + 1L)
+            }
+        }
+    }
     return glszm
 }
 
-def calculateGLSZMFeatures(int[][] image, boolean[][] mask, Map settings, def binEdges) {
+@CompileStatic
+Map calculateGLSZMFeatures(int[][] image, boolean[][] mask, Map settings, List<Number> binEdges) {
     def features = [:]
-    
     def glszm = buildGLSZM(image, mask, binEdges)
     if (glszm.isEmpty()) return features
-    
-    double totalZones = 0.0
-    glszm.each { k, v -> totalZones += v }
+
+    double totalZones = 0.0d
+    for (Long v : glszm.values()) totalZones += v
     if (totalZones == 0) return features
-    
-    int np = 0
-    for (int y = 0; y < mask.length; y++) {
-        for (int x = 0; x < mask[0].length; x++) {
-            if (mask[y][x]) np++
-        }
-    }
+
+    double np = countMaskPixels(mask)
     if (np == 0) return features
-    
-    double sae = 0.0, lae = 0.0, lgze = 0.0, hgze = 0.0
-    double salge = 0.0, sahge = 0.0, lalge = 0.0, lahge = 0.0
-    double glMean = 0.0, szMean = 0.0, zoneEntropy = 0.0
-    
-    def glCounts = [:]
-    def szCounts = [:]
-    
-    glszm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int sz = parts[1].toInteger()
-        double c = count
-        
-        sae += c / (sz * sz)
+
+    double sae = 0.0d, lae = 0.0d, lgze = 0.0d, hgze = 0.0d
+    double salge = 0.0d, sahge = 0.0d, lalge = 0.0d, lahge = 0.0d
+    double glMean = 0.0d, szMean = 0.0d, zoneEntropy = 0.0d
+    Map<Integer, Double> glCounts = new HashMap<Integer, Double>()
+    Map<Integer, Double> szCounts = new HashMap<Integer, Double>()
+
+    for (Map.Entry<Long, Long> entry : glszm.entrySet()) {
+        long key = entry.getKey()
+        int gl = (int) (key >> 32)
+        int sz = (int) (key & 0xffffffffL)
+        double c = entry.getValue()
+        sae += c / ((double) sz * sz)
         lae += c * sz * sz
-        lgze += c / (gl * gl)
+        lgze += c / ((double) gl * gl)
         hgze += c * gl * gl
-        salge += c / (gl * gl * sz * sz)
-        sahge += c * gl * gl / (sz * sz)
-        lalge += c * sz * sz / (gl * gl)
+        salge += c / ((double) gl * gl * sz * sz)
+        sahge += c * gl * gl / ((double) sz * sz)
+        lalge += c * sz * sz / ((double) gl * gl)
         lahge += c * gl * gl * sz * sz
-        
         glMean += gl * c
         szMean += sz * c
-        
-        double p = c / totalZones
-        if (p > 0) zoneEntropy -= p * Math.log(p) / Math.log(2)
-        
-        glCounts[gl] = (glCounts[gl] ?: 0.0) + c
-        szCounts[sz] = (szCounts[sz] ?: 0.0) + c
+        double pz = c / totalZones
+        zoneEntropy -= pz * log2(pz)
+        Double g0 = glCounts.get(gl)
+        glCounts.put(gl, (g0 == null ? 0.0d : g0) + c)
+        Double s0 = szCounts.get(sz)
+        szCounts.put(sz, (s0 == null ? 0.0d : s0) + c)
     }
-    
     glMean /= totalZones
     szMean /= totalZones
-    
-    double glVar = 0.0, szVar = 0.0
-    glszm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int sz = parts[1].toInteger()
-        double c = count
+
+    double glVar = 0.0d, szVar = 0.0d
+    for (Map.Entry<Long, Long> entry : glszm.entrySet()) {
+        long key = entry.getKey()
+        int gl = (int) (key >> 32)
+        int sz = (int) (key & 0xffffffffL)
+        double c = entry.getValue()
         glVar += (gl - glMean) * (gl - glMean) * c
         szVar += (sz - szMean) * (sz - szMean) * c
     }
     glVar /= totalZones
     szVar /= totalZones
-    
-    double glnu = 0.0, sznu = 0.0
-    glCounts.each { gl, c -> glnu += c * c }
-    szCounts.each { sz, c -> sznu += c * c }
-    
+
+    double glnu = 0.0d, sznu = 0.0d
+    for (double c : glCounts.values()) glnu += c * c
+    for (double c : szCounts.values()) sznu += c * c
+
     features['SmallAreaEmphasis'] = sae / totalZones
     features['LargeAreaEmphasis'] = lae / totalZones
     features['GrayLevelNonUniformity'] = glnu / totalZones
@@ -815,7 +813,7 @@ def calculateGLSZMFeatures(int[][] image, boolean[][] mask, Map settings, def bi
     features['SmallAreaHighGrayLevelEmphasis'] = sahge / totalZones
     features['LargeAreaLowGrayLevelEmphasis'] = lalge / totalZones
     features['LargeAreaHighGrayLevelEmphasis'] = lahge / totalZones
-    
+
     return features
 }
 
@@ -823,239 +821,172 @@ def calculateGLSZMFeatures(int[][] image, boolean[][] mask, Map settings, def bi
 // NGTDM FEATURES (5 features)
 // ============================================================================
 
-def buildNGTDM(int[][] image, boolean[][] mask, def binEdges) {
-    def ngtdm = [:]
-    int h = image.length
-    if (h == 0) return ngtdm
-    int w = image[0].length
-    
-    // Quantize using PyRadiomics-style binning
-    int[][] quantized = new int[h][w]
+@CompileStatic
+double[][] buildNGTDM(int[][] image, boolean[][] mask, List<Number> binEdges) {
+    int[][] q = quantizeMatrix(image, mask, binEdges)
+    int ng = maxGrayLevel(q)
+    int h = q.length
+    int w = h > 0 ? q[0].length : 0
+    double[] n = new double[ng + 1]
+    double[] s = new double[ng + 1]
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            quantized[y][x] = mask[y][x] ? quantizeValue((double)image[y][x], binEdges) : -1
-        }
-    }
-    
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            if (quantized[y][x] < 0) continue
-            
-            int gl = quantized[y][x]
-            def neighbors = []
-            
+            int gl = q[y][x]
+            if (gl == 0) continue
+            int count = 0
+            double sum = 0.0d
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dx = -1; dx <= 1; dx++) {
                     if (dx == 0 && dy == 0) continue
                     int ny = y + dy
                     int nx = x + dx
-                    if (ny >= 0 && ny < h && nx >= 0 && nx < w && quantized[ny][nx] >= 0) {
-                        neighbors.add(quantized[ny][nx])
-                    }
+                    if (ny < 0 || ny >= h || nx < 0 || nx >= w) continue
+                    int g = q[ny][nx]
+                    if (g == 0) continue
+                    sum += g
+                    count++
                 }
             }
-            
-            if (neighbors.size() > 0) {
-                double avgNeighbor = 0.0
-                neighbors.each { n -> avgNeighbor += n }
-                avgNeighbor /= neighbors.size()
-                double s = Math.abs(gl - avgNeighbor)
-                
-                if (!ngtdm[gl]) ngtdm[gl] = ['n': 0, 's': 0.0]
-                ngtdm[gl]['n']++
-                ngtdm[gl]['s'] += s
-            }
+            n[gl] += 1
+            if (count > 0) s[gl] += Math.abs(gl - sum / count)
         }
     }
-    
-    return ngtdm
+    return [n, s] as double[][]
 }
 
-def calculateNGTDMFeatures(int[][] image, boolean[][] mask, Map settings, def binEdges) {
+@CompileStatic
+Map calculateNGTDMFeatures(int[][] image, boolean[][] mask, Map settings, List<Number> binEdges) {
     def features = [:]
-    
-    def ngtdm = buildNGTDM(image, mask, binEdges)
-    if (ngtdm.isEmpty()) return features
-    
-    double n = 0.0
-    ngtdm.each { gl, data -> n += data['n'] }
-    if (n == 0) return features
-    
-    int Ng = ngtdm.size()
-    def p = [:]
-    ngtdm.each { gl, data -> p[gl] = data['n'] / n }
-    
-    // Coarseness
-    double sumPS = 0.0
-    ngtdm.each { gl, data -> sumPS += p[gl] * data['s'] }
-    features['Coarseness'] = sumPS > 0 ? 1.0 / sumPS : 0.0
-    
-    // Contrast
-    double contrastSum = 0.0
-    ngtdm.each { gl_i, data_i ->
-        ngtdm.each { gl_j, data_j ->
-            contrastSum += p[gl_i] * p[gl_j] * (gl_i - gl_j) * (gl_i - gl_j)
+    double[][] ns = buildNGTDM(image, mask, binEdges)
+    double[] n = ns[0]
+    double[] s = ns[1]
+    int ng = n.length - 1
+    if (ng < 1) return features
+
+    double nTotal = 0.0d
+    int ngp = 0
+    for (int i = 1; i <= ng; i++) { nTotal += n[i]; if (n[i] > 0) ngp++ }
+    if (nTotal == 0) return features
+
+    double[] p = new double[ng + 1]
+    for (int i = 1; i <= ng; i++) p[i] = n[i] / nTotal
+
+    double sumPS = 0.0d, sumS = 0.0d
+    for (int i = 1; i <= ng; i++) { sumPS += p[i] * s[i]; sumS += s[i] }
+    features['Coarseness'] = sumPS > 0 ? 1.0 / sumPS : 1.0e6
+
+    double contrastSum = 0.0d, busyDenom = 0.0d, complexity = 0.0d, strengthNum = 0.0d
+    for (int i = 1; i <= ng; i++) {
+        if (n[i] == 0) continue
+        for (int j = 1; j <= ng; j++) {
+            if (n[j] == 0) continue
+            double d = i - j
+            contrastSum += p[i] * p[j] * d * d
+            if (i != j) busyDenom += Math.abs(i * p[i] - j * p[j])
+            double denom = p[i] + p[j]
+            if (denom > 0) complexity += Math.abs(d) * (p[i] * s[i] + p[j] * s[j]) / denom
+            strengthNum += (p[i] + p[j]) * d * d
         }
     }
-    double sumS = 0.0
-    ngtdm.each { gl, data -> sumS += data['s'] }
-    features['Contrast'] = (Ng > 1 && n > 0) ? (1.0 / (Ng * (Ng - 1))) * contrastSum * sumS / n : 0.0
-    
-    // Busyness
-    double busyNum = sumPS
-    double busyDenom = 0.0
-    ngtdm.each { gl_i, data_i ->
-        ngtdm.each { gl_j, data_j ->
-            if (gl_i != gl_j) {
-                busyDenom += Math.abs(gl_i * p[gl_i] - gl_j * p[gl_j])
-            }
-        }
-    }
-    features['Busyness'] = busyDenom > 0 ? busyNum / busyDenom : 0.0
-    
-    // Complexity
-    double complexity = 0.0
-    ngtdm.each { gl_i, data_i ->
-        ngtdm.each { gl_j, data_j ->
-            double denom = p[gl_i] + p[gl_j]
-            if (denom > 0) {
-                complexity += Math.abs(gl_i - gl_j) * (p[gl_i] * data_i['s'] + p[gl_j] * data_j['s']) / denom
-            }
-        }
-    }
-    features['Complexity'] = complexity / n
-    
-    // Strength
-    double strengthNum = 0.0
-    ngtdm.each { gl_i, data_i ->
-        ngtdm.each { gl_j, data_j ->
-            strengthNum += (p[gl_i] + p[gl_j]) * (gl_i - gl_j) * (gl_i - gl_j)
-        }
-    }
+    features['Contrast'] = ngp > 1 ? (1.0 / (ngp * (ngp - 1))) * contrastSum * sumS / nTotal : 0.0
+    features['Busyness'] = busyDenom > 0 ? sumPS / busyDenom : 0.0
+    features['Complexity'] = complexity / nTotal
     features['Strength'] = sumS > 0 ? strengthNum / sumS : 0.0
-    
+
     return features
 }
 
 // ============================================================================
-// GLDM FEATURES (15 features)
+// GLDM FEATURES (14 features)
 // ============================================================================
 
-def buildGLDM(int[][] image, boolean[][] mask, def binEdges) {
-    def gldm = [:]
-    int h = image.length
-    if (h == 0) return gldm
-    int w = image[0].length
-    
-    // Quantize using PyRadiomics-style binning
-    int[][] quantized = new int[h][w]
+@CompileStatic
+long[][] buildGLDM(int[][] image, boolean[][] mask, List<Number> binEdges) {
+    int[][] q = quantizeMatrix(image, mask, binEdges)
+    int ng = maxGrayLevel(q)
+    int h = q.length
+    int w = h > 0 ? q[0].length : 0
+    long[][] gldm = new long[ng + 1][10]
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            quantized[y][x] = mask[y][x] ? quantizeValue((double)image[y][x], binEdges) : -1
-        }
-    }
-    
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            if (quantized[y][x] < 0) continue
-            
-            int gl = quantized[y][x]
+            int gl = q[y][x]
+            if (gl == 0) continue
             int dep = 0
-            
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dx = -1; dx <= 1; dx++) {
                     if (dx == 0 && dy == 0) continue
                     int ny = y + dy
                     int nx = x + dx
-                    if (ny >= 0 && ny < h && nx >= 0 && nx < w && quantized[ny][nx] == gl) {
-                        dep++
-                    }
+                    if (ny >= 0 && ny < h && nx >= 0 && nx < w && q[ny][nx] == gl) dep++
                 }
             }
-            
-            // Use dep+1 to avoid zero dependency
-            String key = "${gl},${dep + 1}"
-            gldm[key] = (gldm[key] ?: 0) + 1
+            gldm[gl][dep + 1]++
         }
     }
-    
     return gldm
 }
 
-def calculateGLDMFeatures(int[][] image, boolean[][] mask, Map settings, def binEdges) {
+@CompileStatic
+Map calculateGLDMFeatures(int[][] image, boolean[][] mask, Map settings, List<Number> binEdges) {
     def features = [:]
-    
-    def gldm = buildGLDM(image, mask, binEdges)
-    if (gldm.isEmpty()) return features
-    
-    double totalDep = 0.0
-    gldm.each { k, v -> totalDep += v }
+    long[][] gldm = buildGLDM(image, mask, binEdges)
+    int ng = gldm.length - 1
+    if (ng < 1) return features
+
+    double totalDep = 0.0d
+    for (int i = 1; i <= ng; i++) for (int j = 1; j <= 9; j++) totalDep += gldm[i][j]
     if (totalDep == 0) return features
-    
-    int np = 0
-    for (int y = 0; y < mask.length; y++) {
-        for (int x = 0; x < mask[0].length; x++) {
-            if (mask[y][x]) np++
+
+    double sde = 0.0d, lde = 0.0d, lgde = 0.0d, hgde = 0.0d
+    double sdlge = 0.0d, sdhge = 0.0d, ldlge = 0.0d, ldhge = 0.0d
+    double glMean = 0.0d, depMean = 0.0d, depEntropy = 0.0d
+    double[] glCounts = new double[ng + 1]
+    double[] depCounts = new double[10]
+
+    for (int gl = 1; gl <= ng; gl++) {
+        for (int dep = 1; dep <= 9; dep++) {
+            double c = gldm[gl][dep]
+            if (c == 0) continue
+            sde += c / ((double) dep * dep)
+            lde += c * dep * dep
+            lgde += c / ((double) gl * gl)
+            hgde += c * gl * gl
+            sdlge += c / ((double) gl * gl * dep * dep)
+            sdhge += c * gl * gl / ((double) dep * dep)
+            ldlge += c * dep * dep / ((double) gl * gl)
+            ldhge += c * gl * gl * dep * dep
+            glMean += gl * c
+            depMean += dep * c
+            double pd = c / totalDep
+            depEntropy -= pd * log2(pd)
+            glCounts[gl] += c
+            depCounts[dep] += c
         }
     }
-    
-    double sde = 0.0, lde = 0.0, lgde = 0.0, hgde = 0.0
-    double sdlge = 0.0, sdhge = 0.0, ldlge = 0.0, ldhge = 0.0
-    double glMean = 0.0, depMean = 0.0, depEntropy = 0.0
-    
-    def glCounts = [:]
-    def depCounts = [:]
-    
-    gldm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int dep = parts[1].toInteger()
-        double c = count
-        
-        sde += c / (dep * dep)
-        lde += c * dep * dep
-        lgde += c / (gl * gl)
-        hgde += c * gl * gl
-        sdlge += c / (gl * gl * dep * dep)
-        sdhge += c * gl * gl / (dep * dep)
-        ldlge += c * dep * dep / (gl * gl)
-        ldhge += c * gl * gl * dep * dep
-        
-        glMean += gl * c
-        depMean += dep * c
-        
-        double p = c / totalDep
-        if (p > 0) depEntropy -= p * Math.log(p) / Math.log(2)
-        
-        glCounts[gl] = (glCounts[gl] ?: 0.0) + c
-        depCounts[dep] = (depCounts[dep] ?: 0.0) + c
-    }
-    
     glMean /= totalDep
     depMean /= totalDep
-    
-    double glVar = 0.0, depVar = 0.0
-    gldm.each { key, count ->
-        def parts = key.split(',')
-        int gl = parts[0].toInteger()
-        int dep = parts[1].toInteger()
-        double c = count
-        glVar += (gl - glMean) * (gl - glMean) * c
-        depVar += (dep - depMean) * (dep - depMean) * c
+
+    double glVar = 0.0d, depVar = 0.0d
+    for (int gl = 1; gl <= ng; gl++) {
+        for (int dep = 1; dep <= 9; dep++) {
+            double c = gldm[gl][dep]
+            if (c == 0) continue
+            glVar += (gl - glMean) * (gl - glMean) * c
+            depVar += (dep - depMean) * (dep - depMean) * c
+        }
     }
     glVar /= totalDep
     depVar /= totalDep
-    
-    double glnu = 0.0, depnu = 0.0
-    glCounts.each { gl, c -> glnu += c * c }
-    depCounts.each { dep, c -> depnu += c * c }
-    
+
+    double glnu = 0.0d, depnu = 0.0d
+    for (int gl = 1; gl <= ng; gl++) glnu += glCounts[gl] * glCounts[gl]
+    for (int dep = 1; dep <= 9; dep++) depnu += depCounts[dep] * depCounts[dep]
+
     features['SmallDependenceEmphasis'] = sde / totalDep
     features['LargeDependenceEmphasis'] = lde / totalDep
     features['GrayLevelNonUniformity'] = glnu / totalDep
     features['DependenceNonUniformity'] = depnu / totalDep
     features['DependenceNonUniformityNormalized'] = depnu / (totalDep * totalDep)
-    features['DependencePercentage'] = np > 0 ? totalDep / np : 0.0
     features['GrayLevelVariance'] = glVar
     features['DependenceVariance'] = depVar
     features['DependenceEntropy'] = depEntropy
@@ -1065,7 +996,7 @@ def calculateGLDMFeatures(int[][] image, boolean[][] mask, Map settings, def bin
     features['SmallDependenceHighGrayLevelEmphasis'] = sdhge / totalDep
     features['LargeDependenceLowGrayLevelEmphasis'] = ldlge / totalDep
     features['LargeDependenceHighGrayLevelEmphasis'] = ldhge / totalDep
-    
+
     return features
 }
 
@@ -1073,60 +1004,70 @@ def calculateGLDMFeatures(int[][] image, boolean[][] mask, Map settings, def bin
 // PIXEL EXTRACTION WITH MASK
 // ============================================================================
 
-def extractPixelsWithMask(BufferedImage img, ROI roi, RegionRequest request) {
-    def values = []
-    int width = img.getWidth()
-    int height = img.getHeight()
-    
-    if (width == 0 || height == 0) return [new double[0], new int[0][0], new boolean[0][0]]
-    
-    def shape = roi.getShape()
-    def at = java.awt.geom.AffineTransform.getScaleInstance(
-        1.0 / request.getDownsample(),
-        1.0 / request.getDownsample()
-    )
-    at.translate(-roi.getBoundsX(), -roi.getBoundsY())
-    def transformedShape = at.createTransformedShape(shape)
-    
-    def roiPixels = []
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            if (transformedShape.contains(x, y)) {
-                int rgb = img.getRGB(x, y)
-                int r = (rgb >> 16) & 0xFF
-                int g = (rgb >> 8) & 0xFF
-                int b = rgb & 0xFF
-                int gray = (int)(r * 0.299 + g * 0.587 + b * 0.114)
-                values.add((double)gray)
-                roiPixels.add([x: x, y: y, value: gray])
+@CompileStatic
+BufferedImage rasterizeRoi(ROI roi, RegionRequest request, int width, int height) {
+    BufferedImage maskImg = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
+    java.awt.Graphics2D g2d = maskImg.createGraphics()
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
+    g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
+    g2d.scale(1.0d / request.getDownsample(), 1.0d / request.getDownsample())
+    g2d.translate(-request.getX(), -request.getY())
+    g2d.setColor(Color.WHITE)
+    g2d.fill(roi.getShape())
+    g2d.dispose()
+    return maskImg
+}
+
+@CompileStatic
+List extractPixelsWithMask(BufferedImage img, ROI roi, RegionRequest request, int imageWidth = Integer.MAX_VALUE, int imageHeight = Integer.MAX_VALUE) {
+    int width = Math.min(img.getWidth(), imageWidth - request.getX())
+    int height = Math.min(img.getHeight(), imageHeight - request.getY())
+    if (width <= 0 || height <= 0) return [new double[0], new int[0][0], new boolean[0][0]] as List
+
+    BufferedImage maskImg = rasterizeRoi(roi, request, width, height)
+    java.awt.image.Raster maskRaster = maskImg.getRaster()
+    int[] rgbs = img.getRGB(0, 0, width, height, null, 0, width)
+    int startX = Math.max(0, -request.getX())
+    int startY = Math.max(0, -request.getY())
+
+    int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE
+    int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE
+    int count = 0
+    for (int y = startY; y < height; y++) {
+        for (int x = startX; x < width; x++) {
+            if (maskRaster.getSample(x, y, 0) != 0) {
+                if (x < minX) minX = x
+                if (x > maxX) maxX = x
+                if (y < minY) minY = y
+                if (y > maxY) maxY = y
+                count++
             }
         }
     }
-    
-    if (roiPixels.isEmpty()) return [new double[0], new int[0][0], new boolean[0][0]]
-    
-    int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE
-    int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE
-    roiPixels.each { p ->
-        if (p.x < minX) minX = p.x
-        if (p.x > maxX) maxX = p.x
-        if (p.y < minY) minY = p.y
-        if (p.y > maxY) maxY = p.y
-    }
-    
+    if (count == 0) return [new double[0], new int[0][0], new boolean[0][0]] as List
+
     int compactWidth = maxX - minX + 1
     int compactHeight = maxY - minY + 1
+    double[] values = new double[count]
     int[][] imageMatrix = new int[compactHeight][compactWidth]
     boolean[][] mask = new boolean[compactHeight][compactWidth]
-    
-    roiPixels.each { pixel ->
-        int localX = pixel.x - minX
-        int localY = pixel.y - minY
-        imageMatrix[localY][localX] = pixel.value
-        mask[localY][localX] = true
+
+    int k = 0
+    for (int y = minY; y <= maxY; y++) {
+        for (int x = minX; x <= maxX; x++) {
+            if (maskRaster.getSample(x, y, 0) == 0) continue
+            int rgb = rgbs[y * width + x]
+            int r = (rgb >> 16) & 0xFF
+            int g = (rgb >> 8) & 0xFF
+            int b = rgb & 0xFF
+            int gray = (299 * r + 587 * g + 114 * b).intdiv(1000)
+            values[k++] = gray
+            imageMatrix[y - minY][x - minX] = gray
+            mask[y - minY][x - minX] = true
+        }
     }
-    
-    return [values as double[], imageMatrix, mask]
+
+    return [values, imageMatrix, mask] as List
 }
 
 // ============================================================================
@@ -1147,9 +1088,14 @@ def extractFeatures(ImageServer server, PathObject pathObject, Map settings, Map
 
         if (!needsShape && !needsIntensity) return results
 
-        def request = RegionRequest.createInstance(server.getPath(), 1.0, roi)
+        def request = RegionRequest.createInstance(server.getPath(), 1.0d, roi)
         def img = server.readRegion(request)
-        def (intensities, imageMatrix, mask) = extractPixelsWithMask(img, roi, request)
+        List extracted = extractPixelsWithMask(img, roi, request, server.getWidth(), server.getHeight())
+        double[] intensities = extracted[0] as double[]
+        int[][] imageMatrix = extracted[1] as int[][]
+        boolean[][] mask = extracted[2] as boolean[][]
+        if (intensities.length == 0) return results
+        results['NumPixels'] = intensities.length
 
         if (enabledFeatures['shape2D']) {
             calculateShape2DFeatures(roi, mask).each { k, v -> results["shape2D_${k}"] = v }
@@ -1160,10 +1106,7 @@ def extractFeatures(ImageServer server, PathObject pathObject, Map settings, Map
 
         if (!needsIntensity) return results
 
-        if (intensities.length == 0) return results
-        
-        // Calculate bin edges once for this ROI (PyRadiomics-style)
-        def binEdges = calculateBinEdges(intensities, settings.binWidth ?: 25)
+        List<Number> binEdges = calculateBinEdges(intensities, ((settings.binWidth ?: 25) as Number).intValue())
         
         // First order features
         if (enabledFeatures['firstorder']) {
@@ -1196,5 +1139,79 @@ def extractFeatures(ImageServer server, PathObject pathObject, Map settings, Map
     return results
 }
 
+
+
+@CompileStatic
+String formatValue(Object v) {
+    if (v == null) return ''
+    if (v instanceof Number) return Double.toString(((Number) v).doubleValue())
+    return '"' + v.toString().replace('"', '""') + '"'
+}
+
+@CompileStatic
+File writeCsv(List allResults, File outputFile) {
+    List<String> keys = metadataKeys() as List<String>
+    Map first = allResults[0] as Map
+    Set<String> available = new LinkedHashSet<String>()
+    for (Object row : allResults) available.addAll(((Map) row).keySet() as Set<String>)
+    List<String> featureKeys = available.findAll { !keys.contains(it) }.sort() as List<String>
+    List<String> headers = keys.findAll { first.containsKey(it) } + featureKeys
+    outputFile.withWriter { java.io.Writer writer ->
+        writer.write(headers.join(',')); writer.write('\n')
+        StringBuilder sb = new StringBuilder(4096)
+        for (Object row : allResults) {
+            Map result = row as Map
+            sb.setLength(0)
+            for (int i = 0; i < headers.size(); i++) {
+                if (i > 0) sb.append(',')
+                sb.append(formatValue(result.get(headers.get(i))))
+            }
+            sb.append('\n')
+            writer.write(sb.toString())
+        }
+    }
+    return outputFile
+}
+
+def buildSettingsRecord(ImageServer server, Map settings, Map enabledFeatures, int nObjects) {
+    def cal = server.getPixelCalibration()
+    return [
+        software          : 'QuRad',
+        version           : quradVersion(),
+        qupathVersion     : qupath.lib.common.GeneralTools.getVersion(),
+        image             : server.getMetadata().getName(),
+        imageWidth        : server.getWidth(),
+        imageHeight       : server.getHeight(),
+        isRGB             : server.isRGB(),
+        pixelWidth_um     : cal.hasPixelSizeMicrons() ? cal.getPixelWidthMicrons() : null,
+        pixelHeight_um    : cal.hasPixelSizeMicrons() ? cal.getPixelHeightMicrons() : null,
+        grayscale         : 'floor((299 R + 587 G + 114 B) / 1000) on 8-bit RGB',
+        binWidth          : settings.binWidth,
+        voxelArrayShift   : settings.voxelArrayShift,
+        force2D           : true,
+        glcmDistance_px   : settings.distances[0],
+        glcmAngles        : [[1, 0], [1, 1], [0, 1], [-1, 1]],
+        glrlmAngles       : [[1, 0], [0, 1], [1, 1], [1, -1]],
+        angleAggregation  : 'matrices summed over angles (PyRadiomics weightingNorm=no_weighting), symmetric GLCM',
+        maskConvention    : 'pixel included if its centre lies inside the ROI polygon (Java2D fill, STROKE_PURE, no antialiasing)',
+        enabledFeatures   : enabledFeatures,
+        nObjects          : nObjects,
+        timestamp         : String.format('%tFT%<tT', new Date())
+    ]
+}
+
+def writeSettingsJson(File file, Map record) {
+    java.nio.file.Files.writeString(file.toPath(), GsonTools.getInstance(true).toJson(record))
+    return file
+}
+
+def imageMetadata(ImageServer server) {
+    def cal = server.getPixelCalibration()
+    return [
+        Image          : server.getMetadata().getName(),
+        PixelWidth_um  : cal.hasPixelSizeMicrons() ? cal.getPixelWidthMicrons() : null,
+        PixelHeight_um : cal.hasPixelSizeMicrons() ? cal.getPixelHeightMicrons() : null
+    ]
+}
 
 }

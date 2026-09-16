@@ -30,6 +30,7 @@ class RadiomicsCommand implements Runnable {
         def params = new ParameterList()
                 .addTitleParameter("Discretization")
                 .addIntParameter("binWidth", "Bin width", 25, "", "Intensity discretization width (PyRadiomics default: 25)")
+                .addIntParameter("distance", "GLCM distance (pixels)", 1, "px", "Pixel offset between co-occurring pixels (PyRadiomics default: 1)")
                 .addTitleParameter("Objects to process")
                 .addBooleanParameter("processDetections", "Process detections (cells)", true, "Extract features from detection objects")
                 .addBooleanParameter("processAnnotations", "Process annotations (regions)", false, "Extract features from annotation objects")
@@ -37,12 +38,13 @@ class RadiomicsCommand implements Runnable {
                 .addTitleParameter("Feature classes")
                 .addBooleanParameter("firstorder", "First-order (19)", true)
                 .addBooleanParameter("shape2D", "Shape 2D (10)", true)
-                .addBooleanParameter("shape", "Shape (16)", true)
                 .addBooleanParameter("glcm", "GLCM (23)", true)
                 .addBooleanParameter("glrlm", "GLRLM (16)", true)
                 .addBooleanParameter("glszm", "GLSZM (16)", true)
                 .addBooleanParameter("ngtdm", "NGTDM (5)", true)
-                .addBooleanParameter("gldm", "GLDM (15)", true)
+                .addBooleanParameter("gldm", "GLDM (14)", true)
+                .addBooleanParameter("shape", "Legacy 3D-named shape (16) - not recommended for 2D images", false,
+                        "2D quantities reported under PyRadiomics' 3D shape names; not equivalent to PyRadiomics 3D shape features")
                 .addTitleParameter("Output")
                 .addBooleanParameter("addToMeasurements", "Add to measurement list", true, "Insert features into QuPath's measurement table")
                 .addBooleanParameter("exportCSV", "Export CSV file", true, "Save features to a timestamped CSV file")
@@ -60,7 +62,7 @@ class RadiomicsCommand implements Runnable {
                 binWidth       : params.getIntParameterValue("binWidth"),
                 voxelArrayShift: 0,
                 force2D        : true,
-                distances      : [1],
+                distances      : [Math.max(1, params.getIntParameterValue("distance"))],
                 angles         : 4
         ]
         def enabledFeatures = [
@@ -76,6 +78,11 @@ class RadiomicsCommand implements Runnable {
 
         def hierarchy = imageData.getHierarchy()
         def server = imageData.getServer()
+
+        if (!server.isRGB()) {
+            Dialogs.showErrorMessage(TITLE, "QuRad requires an 8-bit RGB (brightfield) image. This image has ${server.nChannels()} channel(s) of type ${server.getPixelType()}.")
+            return
+        }
 
         List objectsToProcess = []
         if (selectedOnly) {
@@ -112,6 +119,7 @@ class RadiomicsCommand implements Runnable {
     private void runExtraction(server, hierarchy, List objectsToProcess, Map settings, Map enabledFeatures,
                                boolean addToMeasurements, boolean exportCSV, File outputDir) {
         def calc = new RadiomicsCalculator()
+        def imageMeta = calc.imageMetadata(server)
         def allResults = []
         int processedCount = 0
         int skippedCount = 0
@@ -134,6 +142,7 @@ class RadiomicsCommand implements Runnable {
                     return
                 }
 
+                results.putAll(imageMeta)
                 results['ObjectID'] = pathObject.getID().toString()
                 results['ObjectType'] = pathObject.isDetection() ? 'Detection' : 'Annotation'
                 results['Classification'] = pathObject.getPathClass()?.toString() ?: 'Unclassified'
@@ -146,7 +155,7 @@ class RadiomicsCommand implements Runnable {
 
                 if (addToMeasurements) {
                     results.each { k, v ->
-                        if (v instanceof Number)
+                        if (v instanceof Number && !(k in ['Centroid_X', 'Centroid_Y', 'PixelWidth_um', 'PixelHeight_um']))
                             pathObject.measurements.put(k, v.doubleValue())
                     }
                 }
@@ -174,7 +183,13 @@ class RadiomicsCommand implements Runnable {
 
         String csvMessage = ""
         if (exportCSV) {
-            def outputFile = writeCsv(server, allResults, outputDir)
+            if (!outputDir.exists())
+                outputDir.mkdirs()
+            def timestamp = String.format('%tY%<tm%<td_%<tH%<tM%<tS', new Date())
+            def imageName = server.getMetadata().getName().replaceAll('[^a-zA-Z0-9]', '_')
+            def outputFile = calc.writeCsv(allResults, new File(outputDir, "${imageName}_radiomics_${timestamp}.csv"))
+            calc.writeSettingsJson(new File(outputDir, "${imageName}_radiomics_${timestamp}_settings.json"),
+                    calc.buildSettingsRecord(server, settings, enabledFeatures, allResults.size()))
             csvMessage = "\nCSV: ${outputFile.absolutePath}"
             logger.info("QuRad: wrote {} rows to {}", allResults.size(), outputFile.absolutePath)
         }
@@ -183,36 +198,6 @@ class RadiomicsCommand implements Runnable {
         Platform.runLater {
             Dialogs.showInfoNotification(TITLE, message)
         }
-    }
-
-    private File writeCsv(server, List allResults, File outputDir) {
-        if (!outputDir.exists())
-            outputDir.mkdirs()
-
-        def timestamp = String.format('%tY%<tm%<td_%<tH%<tM%<tS', new Date())
-        def imageName = server.getMetadata().getName().replaceAll('[^a-zA-Z0-9]', '_')
-        def outputFile = new File(outputDir, "${imageName}_radiomics_${timestamp}.csv")
-
-        outputFile.withWriter { writer ->
-            def metadataKeys = ['ObjectID', 'ObjectType', 'Classification', 'Centroid_X', 'Centroid_Y']
-            def featureKeys = (allResults[0].keySet() - metadataKeys).sort()
-            def headers = metadataKeys.findAll { allResults[0].containsKey(it) } + featureKeys
-            writer.writeLine(headers.join(','))
-
-            allResults.each { result ->
-                writer.writeLine(headers.collect { h ->
-                    def v = result[h]
-                    if (v == null) {
-                        ''
-                    } else if (v instanceof Number) {
-                        String.format('%.6f', v.doubleValue())
-                    } else {
-                        "\"${v.toString().replaceAll('"', '""')}\""
-                    }
-                }.join(','))
-            }
-        }
-        return outputFile
     }
 
     private File resolveOutputDir() {

@@ -1,0 +1,373 @@
+{
+ "n_cells": 6186,
+ "n_tiles": 20,
+ "class_counts": {
+  "Tumor": 4130,
+  "Lymphocyte": 2056
+ },
+ "n_features_input": 103,
+ "main": {
+  "pooled_macro_f1": 0.8524904399569203,
+  "fold_mean": 0.8373876383030364,
+  "fold_sd": 0.021214782945269853,
+  "n_features_mean": 62.6,
+  "n_features_min": 62.0,
+  "n_features_max": 63.0
+ },
+ "folds": [
+  {
+   "fold": 1,
+   "test_groups": [
+    3.0,
+    6.0,
+    10.0,
+    13.0
+   ],
+   "n_train": 4945,
+   "n_test": 1241,
+   "n_features": 63,
+   "macro_f1": 0.8558850717041031,
+   "accuracy": 0.8589846897663175,
+   "F1[Lymphocyte]": 0.8347497639282342,
+   "F1[Tumor]": 0.8770203794799719
+  },
+  {
+   "fold": 2,
+   "test_groups": [
+    12.0,
+    16.0,
+    17.0,
+    20.0
+   ],
+   "n_train": 4962,
+   "n_test": 1224,
+   "n_features": 62,
+   "macro_f1": 0.8052663511709743,
+   "accuracy": 0.8553921568627451,
+   "F1[Lymphocyte]": 0.7064676616915423,
+   "F1[Tumor]": 0.9040650406504065
+  },
+  {
+   "fold": 3,
+   "test_groups": [
+    4.0,
+    5.0,
+    9.0,
+    11.0
+   ],
+   "n_train": 4976,
+   "n_test": 1210,
+   "n_features": 63,
+   "macro_f1": 0.8404164084159109,
+   "accuracy": 0.8404958677685951,
+   "F1[Lymphocyte]": 0.8439773645917542,
+   "F1[Tumor]": 0.8368554522400676
+  },
+  {
+   "fold": 4,
+   "test_groups": [
+    1.0,
+    7.0,
+    8.0,
+    18.0
+   ],
+   "n_train": 4940,
+   "n_test": 1246,
+   "n_features": 62,
+   "macro_f1": 0.8561208525064774,
+   "accuracy": 0.877207062600321,
+   "F1[Lymphocyte]": 0.8010403120936281,
+   "F1[Tumor]": 0.9112013929193268
+  },
+  {
+   "fold": 5,
+   "test_groups": [
+    2.0,
+    14.0,
+    15.0,
+    19.0
+   ],
+   "n_train": 4921,
+   "n_test": 1265,
+   "n_features": 63,
+   "macro_f1": 0.8292495077177158,
+   "accuracy": 0.9193675889328063,
+   "F1[Lymphocyte]": 0.7052023121387283,
+   "F1[Tumor]": 0.9532967032967034
+  }
+ ],
+ "report": {
+  "Lymphocyte": {
+   "precision": 0.8207354443309499,
+   "recall": 0.7816147859922179,
+   "f1-score": 0.8006975585450922,
+   "support": 2056.0
+  },
+  "Tumor": {
+   "precision": 0.8938032166508988,
+   "recall": 0.9150121065375303,
+   "f1-score": 0.9042833213687484,
+   "support": 4130.0
+  },
+  "accuracy": 0.870675719366311,
+  "macro avg": {
+   "precision": 0.8572693304909244,
+   "recall": 0.848313446264874,
+   "f1-score": 0.8524904399569203,
+   "support": 6186.0
+  },
+  "weighted avg": {
+   "precision": 0.8695181633224451,
+   "recall": 0.870675719366311,
+   "f1-score": 0.8698552049178211,
+   "support": 6186.0
+  }
+ },
+ "top_features": {
+  "mean_importance": {
+   "firstorder_Energy": 0.0848,
+   "shape2D_MajorAxisLength": 0.0683,
+   "glszm_LargeAreaHighGrayLevelEmphasis": 0.0612,
+   "glrlm_GrayLevelNonUniformity": 0.0538,
+   "gldm_DependenceVariance": 0.0392,
+   "firstorder_Skewness": 0.0374,
+   "ngtdm_Strength": 0.037,
+   "glcm_ClusterShade": 0.0369,
+   "ngtdm_Coarseness": 0.0345,
+   "glrlm_LongRunHighGrayLevelEmphasis": 0.0252,
+   "firstorder_RootMeanSquared": 0.0248,
+   "glrlm_RunLengthNonUniformityNormalized": 0.024,
+   "shape2D_PerimeterSurfaceRatio": 0.0219,
+   "gldm_DependenceNonUniformity": 0.0215,
+   "gldm_LargeDependenceHighGrayLevelEmphasis": 0.0214
+  },
+  "folds_selected": {
+   "firstorder_Energy": 4,
+   "shape2D_MajorAxisLength": 5,
+   "glszm_LargeAreaHighGrayLevelEmphasis": 5,
+   "glrlm_GrayLevelNonUniformity": 5,
+   "gldm_DependenceVariance": 5,
+   "firstorder_Skewness": 5,
+   "ngtdm_Strength": 5,
+   "glcm_ClusterShade": 5,
+   "ngtdm_Coarseness": 5,
+   "glrlm_LongRunHighGrayLevelEmphasis": 5,
+   "firstorder_RootMeanSquared": 4,
+   "glrlm_RunLengthNonUniformityNormalized": 4,
+   "shape2D_PerimeterSurfaceRatio": 5,
+   "gldm_DependenceNonUniformity": 4,
+   "gldm_LargeDependenceHighGrayLevelEmphasis": 5
+  }
+ },
+ "ablation": [
+  {
+   "feature_set": "basic morphology/intensity (10)",
+   "n_input": 10,
+   "n_kept": "8-8",
+   "fold_macro_f1": "0.827 +/- 0.017",
+   "pooled_macro_f1": 0.843
+  },
+  {
+   "feature_set": "first-order only",
+   "n_input": 19,
+   "n_kept": "9-10",
+   "fold_macro_f1": "0.816 +/- 0.018",
+   "pooled_macro_f1": 0.832
+  },
+  {
+   "feature_set": "shape2D only",
+   "n_input": 10,
+   "n_kept": "4-5",
+   "fold_macro_f1": "0.749 +/- 0.023",
+   "pooled_macro_f1": 0.766
+  },
+  {
+   "feature_set": "texture only (GLCM, GLRLM, GLSZM, NGTDM, GLDM)",
+   "n_input": 74,
+   "n_kept": "50-50",
+   "fold_macro_f1": "0.827 +/- 0.032",
+   "pooled_macro_f1": 0.839
+  },
+  {
+   "feature_set": "first-order + shape2D",
+   "n_input": 29,
+   "n_kept": "15-15",
+   "fold_macro_f1": "0.840 +/- 0.018",
+   "pooled_macro_f1": 0.855
+  },
+  {
+   "feature_set": "first-order + texture (no shape)",
+   "n_input": 93,
+   "n_kept": "57-58",
+   "fold_macro_f1": "0.822 +/- 0.022",
+   "pooled_macro_f1": 0.838
+  },
+  {
+   "feature_set": "all 2D features (default output)",
+   "n_input": 103,
+   "n_kept": "62-63",
+   "fold_macro_f1": "0.837 +/- 0.021",
+   "pooled_macro_f1": 0.852
+  },
+  {
+   "feature_set": "all 2D + legacy 3D-named shape",
+   "n_input": 119,
+   "n_kept": "63-65",
+   "fold_macro_f1": "0.838 +/- 0.023",
+   "pooled_macro_f1": 0.854
+  }
+ ],
+ "legacy_shape_selected_folds": {
+  "shape_Compactness1": 0,
+  "shape_Compactness2": 5,
+  "shape_Elongation": 0,
+  "shape_LeastAxisLength": 0,
+  "shape_MajorAxisLength": 0,
+  "shape_Maximum2DDiameterColumn": 5,
+  "shape_Maximum2DDiameterRow": 5,
+  "shape_Maximum2DDiameterSlice": 0,
+  "shape_Maximum3DDiameter": 0,
+  "shape_MeshVolume": 0,
+  "shape_MinorAxisLength": 0,
+  "shape_SphericalDisproportion": 0,
+  "shape_Sphericity": 0,
+  "shape_SurfaceArea": 0,
+  "shape_SurfaceVolumeRatio": 0,
+  "shape_VoxelVolume": 0
+ },
+ "per_tile": [
+  {
+   "group": 1,
+   "n": 405,
+   "accuracy": 0.8518518518518519,
+   "macro_f1": 0.8471544306345293
+  },
+  {
+   "group": 2,
+   "n": 410,
+   "accuracy": 0.9804878048780488,
+   "macro_f1": 0.7450248756218906
+  },
+  {
+   "group": 3,
+   "n": 617,
+   "accuracy": 0.880064829821718,
+   "macro_f1": 0.8664502164502164
+  },
+  {
+   "group": 4,
+   "n": 215,
+   "accuracy": 0.8093023255813954,
+   "macro_f1": 0.8044110142226364
+  },
+  {
+   "group": 5,
+   "n": 324,
+   "accuracy": 0.8734567901234568,
+   "macro_f1": 0.7514547121447415
+  },
+  {
+   "group": 6,
+   "n": 156,
+   "accuracy": 0.8782051282051282,
+   "macro_f1": 0.8749947281852305
+  },
+  {
+   "group": 7,
+   "n": 163,
+   "accuracy": 0.6932515337423313,
+   "macro_f1": 0.6051356589147286
+  },
+  {
+   "group": 8,
+   "n": 475,
+   "accuracy": 0.9452631578947368,
+   "macro_f1": 0.7147542498152254
+  },
+  {
+   "group": 9,
+   "n": 553,
+   "accuracy": 0.8264014466546112,
+   "macro_f1": 0.8120113314447592
+  },
+  {
+   "group": 10,
+   "n": 243,
+   "accuracy": 0.7983539094650206,
+   "macro_f1": 0.7552266419981499
+  },
+  {
+   "group": 11,
+   "n": 118,
+   "accuracy": 0.8728813559322034,
+   "macro_f1": 0.871319520174482
+  },
+  {
+   "group": 12,
+   "n": 133,
+   "accuracy": 0.9624060150375939,
+   "macro_f1": 0.9535776614310646
+  },
+  {
+   "group": 13,
+   "n": 225,
+   "accuracy": 0.8533333333333334,
+   "macro_f1": 0.7562456912117134
+  },
+  {
+   "group": 14,
+   "n": 183,
+   "accuracy": 0.9453551912568307,
+   "macro_f1": 0.9003267973856209
+  },
+  {
+   "group": 15,
+   "n": 445,
+   "accuracy": 0.9056179775280899,
+   "macro_f1": 0.8415242165242165
+  },
+  {
+   "group": 16,
+   "n": 573,
+   "accuracy": 0.8080279232111692,
+   "macro_f1": 0.6694600604128209
+  },
+  {
+   "group": 17,
+   "n": 198,
+   "accuracy": 0.8686868686868687,
+   "macro_f1": 0.8563616071428571
+  },
+  {
+   "group": 18,
+   "n": 203,
+   "accuracy": 0.916256157635468,
+   "macro_f1": 0.9121279250375576
+  },
+  {
+   "group": 19,
+   "n": 227,
+   "accuracy": 0.8149779735682819,
+   "macro_f1": 0.7448619139370585
+  },
+  {
+   "group": 20,
+   "n": 320,
+   "accuracy": 0.8875,
+   "macro_f1": 0.8635782293591019
+  }
+ ],
+ "versions": {
+  "sklearn": "1.6.1",
+  "numpy": "2.2.6",
+  "umap": "0.5.11",
+  "qurad": "0.4.0"
+ },
+ "seed": 42,
+ "rf": {
+  "n_estimators": 500,
+  "max_depth": 15,
+  "min_samples_split": 2,
+  "class_weight": "balanced"
+ }
+}

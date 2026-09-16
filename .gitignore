@@ -1,15 +1,45 @@
-# Large files
-*.ndpi
-example_data/gbm/*.ndpi
-# Large files
-example_data/gbm/*.ndpi
-*.ndpi
-article_figures/
-example_data/
-article/
-article
+# Author-only working material: manuscript, figure sources, submission package, paper build
+internal/
 site/
 CLAUDE.md
 .claude/
-guidelines.txt
 
+# Large source images. The notebooks run from the feature tables, not the pixels;
+# ship these through Zenodo rather than git.
+*.ndpi
+example_data/puma_subset/*.tif
+example_data/puma_subset/*_nuclei.geojson
+example_data/puma_subset/*_tissue.geojson
+example_data/tiger_subset/*.tif
+# TIGER annotation files: dataset-provider terms apply; not redistributed here until cleared
+example_data/tiger_subset/*.xml
+example_data/tiger_subset/*.geojson
+
+# Validation outputs. The feature tables the notebooks read are kept; the extraction
+# intermediates and the derived pooled tables are not (see internal/reproducibility/cleanup.sh).
+validation/results/benchmark/
+validation/results/figures/
+validation/results/main_figures/
+validation/results/notebooks/
+validation/results/logs/
+validation/results/numba/
+validation/results/matplotlib/
+validation/results/*.log
+validation/results/run_report.json
+validation/results/summary/*_pooled.csv
+validation/results/puma/*/masks/
+validation/results/puma/*/gray.png
+
+# Build output and caches
+extension/build/
+extension/.gradle/
+__pycache__/
+*.aux
+*.bcf
+*.blg
+*.out
+*.run.xml
+*.synctex.gz
+
+# notebook run logs
+validation/results/ml/*.log

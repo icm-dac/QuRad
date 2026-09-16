@@ -506,26 +506,27 @@
 </code></pre></div>
 <hr />
 <h2 id="what-is-qurad">What is QuRad?</h2>
-<p>QuRad is an open-source <a href="https://qupath.github.io/">QuPath</a> tool that extracts 120 radiomic features directly from cell detections and user-defined regions, without any external plugins or libraries. It is available in two interchangeable forms that share the same validated feature-extraction code:</p>
+<p>QuRad is an open-source <a href="https://qupath.github.io/">QuPath</a> tool that extracts up to 119 radiomic features (103 enabled by default) directly from cell detections and user-defined regions, without any external plugins or libraries. Its output has been validated feature by feature against PyRadiomics. It is available in two interchangeable forms that share the same validated feature-extraction code:</p>
 <ul>
 <li>an <strong>installable QuPath extension</strong> (a <code>.jar</code> with a menu command and settings dialog), and</li>
 <li>a <strong>self-contained Groovy script</strong> that you paste into QuPath's Script Editor.</li>
 </ul>
-<p>QuRad operates on <strong>2D whole slide images (WSI)</strong>, extracting features from grayscale images derived from RGB luminance. It has been validated on H&amp;E histopathology images and is built for <strong>QuPath 0.6 and 0.7</strong>.</p>
+<p>QuRad operates on <strong>2D whole slide images (WSI)</strong> in 8-bit RGB, extracting features from a grayscale image derived from RGB luminance. It has been validated on H&amp;E histopathology images and is built for <strong>QuPath 0.6 and 0.7</strong>.</p>
 <p>Extracted features can be used to <strong>classify cells</strong>, <strong>characterize tissue regions</strong>, <strong>assess tissue quality</strong>, and feed <strong>downstream machine learning workflows</strong>. By keeping the entire process within QuPath, QuRad streamlines the analytical workflow and preserves interactivity.</p>
-<p>This documentation covers <strong>QuRad v3</strong>. Source code and releases are available on <a href="https://github.com/icm-dac/QuRad">GitHub</a>.</p>
+<p>This documentation covers <strong>QuRad 0.4</strong> (script <code>QuPath_Radiomics_v3.groovy</code>, extension <code>qupath-extension-qurad-0.4.0</code>). Source code and releases are available on <a href="https://github.com/icm-dac/QuRad">GitHub</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Research use</p>
 <p>QuRad is a research tool provided under the MIT license. It is intended for research purposes and has not been validated for clinical use.</p>
 </div>
 <hr />
 <h2 id="output-and-feature-classes">Output and Feature Classes</h2>
-<p>QuRad extracts 120 features organized into 8 classes. For a detailed description of each feature, see the <a href="features/">Feature Reference</a>.</p>
+<p>QuRad extracts 103 features by default, organized into 7 classes, plus an optional legacy class. For a detailed description of each feature, see the <a href="features/">Feature Reference</a>.</p>
 <table>
 <thead>
 <tr>
 <th>Class</th>
 <th>Features</th>
+<th>Default</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -533,42 +534,50 @@
 <tr>
 <td><strong>First-order</strong></td>
 <td>19</td>
+<td>on</td>
 <td>Intensity statistics (mean, variance, entropy, etc.)</td>
 </tr>
 <tr>
 <td><strong>Shape 2D</strong></td>
 <td>10</td>
-<td>2D geometric features (area, perimeter, sphericity)</td>
-</tr>
-<tr>
-<td><strong>Shape 3D</strong></td>
-<td>16</td>
-<td>3D geometric features (volume, surface area)</td>
+<td>on</td>
+<td>2D geometric features (area, perimeter, sphericity, axis lengths)</td>
 </tr>
 <tr>
 <td><strong>GLCM</strong></td>
 <td>23</td>
+<td>on</td>
 <td>Gray Level Co-occurrence Matrix texture features</td>
 </tr>
 <tr>
 <td><strong>GLRLM</strong></td>
 <td>16</td>
+<td>on</td>
 <td>Gray Level Run Length Matrix features</td>
 </tr>
 <tr>
 <td><strong>GLSZM</strong></td>
 <td>16</td>
+<td>on</td>
 <td>Gray Level Size Zone Matrix features</td>
 </tr>
 <tr>
 <td><strong>NGTDM</strong></td>
 <td>5</td>
+<td>on</td>
 <td>Neighborhood Gray Tone Difference Matrix</td>
 </tr>
 <tr>
 <td><strong>GLDM</strong></td>
-<td>15</td>
+<td>14</td>
+<td>on</td>
 <td>Gray Level Dependence Matrix features</td>
+</tr>
+<tr>
+<td><strong>Shape (legacy 3D names)</strong></td>
+<td>16</td>
+<td>off</td>
+<td>2D quantities under PyRadiomics' 3D shape names; not recommended</td>
 </tr>
 </tbody>
 </table>
@@ -576,7 +585,7 @@
 <h2 id="quick-links">Quick Links</h2>
 <ul>
 <li><a href="getting-started/">Getting Started</a> - Set up and run your first radiomics extraction</li>
-<li><a href="features/">Feature Reference</a> - Detailed description of all 120 features</li>
+<li><a href="features/">Feature Reference</a> - Definitions, conventions and PyRadiomics mapping of all features</li>
 <li><a href="example-application/">Example Application</a> - End-to-end workflow tutorial</li>
 </ul>
 <hr />

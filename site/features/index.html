@@ -378,10 +378,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#first-order-features-19-features" class="md-nav__link">
+  <a href="#naming-and-mapping-to-pyradiomics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        First-Order Features (19 features)
+        Naming and mapping to PyRadiomics
       
     </span>
   </a>
@@ -389,10 +389,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shape-2d-features-10-features" class="md-nav__link">
+  <a href="#conventions-that-determine-the-values" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shape 2D Features (10 features)
+        Conventions that determine the values
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conventions that determine the values">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#edge-cases-and-undefined-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge cases and undefined values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#first-order-features-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First-order features (19)
       
     </span>
   </a>
@@ -400,10 +428,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shape-3d-features-16-features" class="md-nav__link">
+  <a href="#shape-2d-features-10" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shape 3D Features (16 features)
+        Shape 2D features (10)
       
     </span>
   </a>
@@ -411,10 +439,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#glcm-features-23-features" class="md-nav__link">
+  <a href="#glcm-features-23" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GLCM Features (23 features)
+        GLCM features (23)
       
     </span>
   </a>
@@ -422,10 +450,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#glrlm-features-16-features" class="md-nav__link">
+  <a href="#glrlm-features-16" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GLRLM Features (16 features)
+        GLRLM features (16)
       
     </span>
   </a>
@@ -433,10 +461,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#glszm-features-16-features" class="md-nav__link">
+  <a href="#glszm-features-16" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GLSZM Features (16 features)
+        GLSZM features (16)
       
     </span>
   </a>
@@ -444,10 +472,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ngtdm-features-5-features" class="md-nav__link">
+  <a href="#ngtdm-features-5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        NGTDM Features (5 features)
+        NGTDM features (5)
       
     </span>
   </a>
@@ -455,10 +483,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#gldm-features-15-features" class="md-nav__link">
+  <a href="#gldm-features-14" class="md-nav__link">
     <span class="md-ellipsis">
       
-        GLDM Features (15 features)
+        GLDM features (14)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-3d-named-shape-features-16-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy 3D-named shape features (16, optional)
       
     </span>
   </a>
@@ -469,7 +508,7 @@
   <a href="#further-reading" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Further Reading
+        Further reading
       
     </span>
   </a>
@@ -532,585 +571,625 @@
 
 
 <h1 id="feature-reference">Feature Reference</h1>
-<p>QuRad extracts 120 radiomics features organized into 8 feature classes. All features are compatible with <a href="https://pyradiomics.readthedocs.io/en/latest/features.html">PyRadiomics</a>. For an overview of the feature classes and their counts, see the <a href="../#output-and-feature-classes">home page</a>.</p>
-<h2 id="first-order-features-19-features">First-Order Features (19 features)</h2>
-<p>First-order statistics describe the distribution of pixel intensities within the ROI.</p>
+<p>QuRad implements <strong>119 radiomic features</strong> in eight classes. <strong>103 features are enabled by default</strong>; they are all
+two-dimensional quantities with a direct <a href="https://pyradiomics.readthedocs.io/en/latest/features.html">PyRadiomics</a>
+equivalent. The remaining <strong>16 features of the <code>shape</code> class are optional</strong> (off by default): they are 2D quantities
+reported under PyRadiomics' 3D shape names for backwards compatibility and are <em>not</em> equivalent to PyRadiomics' 3D shape
+features (see <a href="#legacy-3d-named-shape-features-16-optional">below</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Features</th>
+<th>Default</th>
+<th>PyRadiomics equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>firstorder</code></td>
+<td>19</td>
+<td>on</td>
+<td>19/19 (<code>StandardDeviation</code> is optional in PyRadiomics)</td>
+</tr>
+<tr>
+<td><code>shape2D</code></td>
+<td>10</td>
+<td>on</td>
+<td>10/10 (<code>SphericalDisproportion</code> is optional in PyRadiomics)</td>
+</tr>
+<tr>
+<td><code>glcm</code></td>
+<td>23</td>
+<td>on</td>
+<td>23/23 (PyRadiomics' <code>MCC</code> is not implemented)</td>
+</tr>
+<tr>
+<td><code>glrlm</code></td>
+<td>16</td>
+<td>on</td>
+<td>16/16</td>
+</tr>
+<tr>
+<td><code>glszm</code></td>
+<td>16</td>
+<td>on</td>
+<td>16/16</td>
+</tr>
+<tr>
+<td><code>ngtdm</code></td>
+<td>5</td>
+<td>on</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td><code>gldm</code></td>
+<td>14</td>
+<td>on</td>
+<td>14/14 (PyRadiomics' deprecated <code>DependencePercentage</code>, always 1, was removed in QuRad 0.4)</td>
+</tr>
+<tr>
+<td><code>shape</code> (legacy)</td>
+<td>16</td>
+<td><strong>off</strong></td>
+<td>same names, different definitions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="naming-and-mapping-to-pyradiomics">Naming and mapping to PyRadiomics</h2>
+<p>Column names follow <code>class_FeatureName</code>, e.g. <code>firstorder_Entropy</code>, <code>glcm_JointEnergy</code>. The corresponding PyRadiomics
+name is obtained by prefixing <code>original_</code> (<code>original_glcm_JointEnergy</code>), so exported CSVs can be mapped
+programmatically. Per-feature agreement with PyRadiomics 3.0.1 (Pearson r, concordance correlation coefficient, maximum
+relative error) is tabulated in the validation notebook (<code>notebooks/validation.ipynb</code>) and in the article's
+Supplementary Table S1.</p>
+<h2 id="conventions-that-determine-the-values">Conventions that determine the values</h2>
+<p>These conventions are fixed in the code and recorded in the <code>*_settings.json</code> file written next to every CSV.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>QuRad convention</th>
+<th>PyRadiomics setting reproducing it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td>8-bit RGB brightfield image, read at full resolution (downsample 1). Non-RGB images are refused.</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Grayscale</td>
+<td><code>gray = floor((299 R + 587 G + 114 B) / 1000)</code> (integer arithmetic, values 0–255)</td>
+<td>same conversion applied before extraction</td>
+</tr>
+<tr>
+<td>Pixel mask</td>
+<td>a pixel belongs to the ROI if its <strong>centre</strong> lies inside the ROI polygon (Java2D fill, pure geometry, no anti-aliasing); pixels outside the image are ignored</td>
+<td>label mask</td>
+</tr>
+<tr>
+<td>Discretisation</td>
+<td>fixed bin width (default 25); bin edges aligned to multiples of the bin width from 0; bin index = floor((v − lowBound)/binWidth) + 1</td>
+<td><code>binWidth=25</code>, <code>normalize=False</code>, <code>voxelArrayShift=0</code></td>
+</tr>
+<tr>
+<td>GLCM</td>
+<td>symmetric matrix, distance 1 (configurable), four directions (0°, 45°, 90°, 135°), matrices <strong>summed over directions</strong> before features are computed</td>
+<td><code>force2D=True</code>, <code>distances=[1]</code>, <code>symmetricalGLCM=True</code>, <code>weightingNorm='no_weighting'</code></td>
+</tr>
+<tr>
+<td>GLRLM</td>
+<td>runs along the same four directions, matrices summed</td>
+<td><code>weightingNorm='no_weighting'</code></td>
+</tr>
+<tr>
+<td>GLSZM</td>
+<td>zones are 8-connected</td>
+<td>default</td>
+</tr>
+<tr>
+<td>NGTDM, GLDM</td>
+<td>8-neighbourhood, distance 1; GLDM coarseness parameter α = 0</td>
+<td>default</td>
+</tr>
+<tr>
+<td>Percentiles, median</td>
+<td>linear interpolation (NumPy default)</td>
+<td>default</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Angle aggregation</p>
+<p>PyRadiomics' <em>default</em> computes GLCM and GLRLM features for each direction separately and averages the feature
+values. QuRad sums the matrices first, which corresponds to PyRadiomics with <code>weightingNorm='no_weighting'</code>. On the
+validation data the two conventions differ by a median relative error of about 0.5 % (GLCM) and 3 % (GLRLM), with
+maximum differences of up to 50 % for run-length emphasis features of individual small nuclei.</p>
+</div>
+<p>CSV headers include the union of feature names over all processed objects. If a feature is undefined for one object, its cell is blank; that object does not suppress valid columns for later objects.</p>
+<h3 id="edge-cases-and-undefined-values">Edge cases and undefined values</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>QuRad behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROI polygon contains no pixel centre (e.g. degenerate sliver)</td>
+<td>object skipped and counted as skipped; no row is written</td>
+</tr>
+<tr>
+<td>ROI extends beyond the image</td>
+<td>pixel-based features use the pixels inside the image; polygon-based shape features (<code>MeshSurface</code>, <code>Perimeter</code>, <code>MaximumDiameter</code>, sphericity) describe the polygon as drawn; <code>NumPixels</code> reports the pixels actually used</td>
+</tr>
+<tr>
+<td>Flat region (single gray level)</td>
+<td><code>firstorder_Entropy = 0</code>, <code>Uniformity = 1</code>, <code>Skewness = Kurtosis = 0</code>, <code>glcm_Correlation = 1</code>, <code>glcm_Imc1 = Imc2 = 0</code>, <code>ngtdm_Coarseness = 10^6</code>, <code>ngtdm_Contrast = Busyness = Strength = 0</code> (all as in PyRadiomics)</td>
+</tr>
+<tr>
+<td>Zero denominator elsewhere (perimeter 0, no run/zone, …)</td>
+<td>feature is 0</td>
+</tr>
+<tr>
+<td><code>glcm_Imc2</code> with HXY2 &lt; HXY (rounding)</td>
+<td>0 (as in PyRadiomics)</td>
+</tr>
+<tr>
+<td>Very small ROIs</td>
+<td>QuRad computes all features from a single pixel upwards; PyRadiomics refuses masks with fewer than 2 pixels in any dimension. Texture matrices of ROIs with fewer than ~10 pixels are degenerate; use the <code>NumPixels</code> column to filter.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="first-order-features-19">First-order features (19)</h2>
+<p>Computed on the gray values <code>x</code> of the <code>N</code> pixels in the ROI. Histogram-based features use the discretised values.</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
+<th>Definition</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>firstorder_Energy</code></td>
-<td>Sum of squared pixel values</td>
+<td>Σ x²</td>
 </tr>
 <tr>
 <td><code>firstorder_TotalEnergy</code></td>
-<td>Same as Energy</td>
+<td>identical to Energy (pixel area = 1)</td>
 </tr>
 <tr>
 <td><code>firstorder_Entropy</code></td>
-<td>Measure of randomness in intensity distribution</td>
+<td>−Σ p(i) log₂ p(i) over histogram bins</td>
 </tr>
 <tr>
-<td><code>firstorder_Minimum</code></td>
-<td>Minimum intensity value</td>
+<td><code>firstorder_Minimum</code>, <code>Maximum</code>, <code>Range</code></td>
+<td>min, max, max − min</td>
 </tr>
 <tr>
-<td><code>firstorder_10Percentile</code></td>
-<td>10th percentile of intensity</td>
-</tr>
-<tr>
-<td><code>firstorder_90Percentile</code></td>
-<td>90th percentile of intensity</td>
-</tr>
-<tr>
-<td><code>firstorder_Maximum</code></td>
-<td>Maximum intensity value</td>
-</tr>
-<tr>
-<td><code>firstorder_Mean</code></td>
-<td>Average intensity</td>
-</tr>
-<tr>
-<td><code>firstorder_Median</code></td>
-<td>Median intensity</td>
+<td><code>firstorder_10Percentile</code>, <code>90Percentile</code>, <code>Median</code></td>
+<td>percentiles with linear interpolation</td>
 </tr>
 <tr>
 <td><code>firstorder_InterquartileRange</code></td>
-<td>Difference between 75th and 25th percentiles</td>
+<td>P75 − P25</td>
 </tr>
 <tr>
-<td><code>firstorder_Range</code></td>
-<td>Difference between max and min</td>
+<td><code>firstorder_Mean</code></td>
+<td>Σ x / N</td>
 </tr>
 <tr>
 <td><code>firstorder_MeanAbsoluteDeviation</code></td>
-<td>Mean absolute deviation from the mean</td>
+<td>Σ |x − mean| / N</td>
 </tr>
 <tr>
 <td><code>firstorder_RobustMeanAbsoluteDeviation</code></td>
-<td>MAD calculated on 10-90 percentile range</td>
+<td>mean absolute deviation of the values within [P10, P90]</td>
 </tr>
 <tr>
 <td><code>firstorder_RootMeanSquared</code></td>
-<td>Square root of mean squared intensity</td>
+<td>√(Σ x² / N)</td>
 </tr>
 <tr>
 <td><code>firstorder_Variance</code></td>
-<td>Variance of intensities</td>
+<td>Σ (x − mean)² / N (population variance)</td>
 </tr>
 <tr>
 <td><code>firstorder_StandardDeviation</code></td>
-<td>Standard deviation of intensities</td>
+<td>√Variance</td>
 </tr>
 <tr>
 <td><code>firstorder_Skewness</code></td>
-<td>Asymmetry of the intensity distribution</td>
+<td>m₃ / m₂^1.5 (0 for flat regions)</td>
 </tr>
 <tr>
 <td><code>firstorder_Kurtosis</code></td>
-<td>Peakedness of the intensity distribution</td>
+<td>m₄ / m₂² (not excess kurtosis; 0 for flat regions)</td>
 </tr>
 <tr>
 <td><code>firstorder_Uniformity</code></td>
-<td>Sum of squared probabilities (inverse of entropy)</td>
+<td>Σ p(i)²</td>
 </tr>
 </tbody>
 </table>
-<h2 id="shape-2d-features-10-features">Shape 2D Features (10 features)</h2>
-<p>Shape features describe the geometric properties of the ROI in 2D.</p>
+<h2 id="shape-2d-features-10">Shape 2D features (10)</h2>
+<p><code>A</code> is the polygon area, <code>P</code> the polygon perimeter, <code>N</code> the number of pixels in the mask. Axis lengths use the
+principal components of the pixel-centre coordinates (population covariance), as in PyRadiomics.</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
+<th>Definition</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>shape2D_MeshSurfaceArea</code></td>
-<td>Perimeter of the ROI</td>
+<td><code>shape2D_MeshSurface</code></td>
+<td>polygon area A (PyRadiomics: marching-squares mesh area; identical for polygons traced from a raster)</td>
 </tr>
 <tr>
 <td><code>shape2D_PixelSurface</code></td>
-<td>Same as perimeter</td>
+<td>number of pixels N</td>
 </tr>
 <tr>
 <td><code>shape2D_Perimeter</code></td>
-<td>Boundary length</td>
+<td>polygon perimeter P</td>
 </tr>
 <tr>
 <td><code>shape2D_PerimeterSurfaceRatio</code></td>
-<td>Ratio of perimeter to area</td>
+<td>P / A</td>
 </tr>
 <tr>
 <td><code>shape2D_Sphericity</code></td>
-<td>Circularity measure (1 = perfect circle)</td>
+<td>2√(πA) / P</td>
 </tr>
 <tr>
 <td><code>shape2D_SphericalDisproportion</code></td>
-<td>Inverse of sphericity</td>
+<td>P / (2√(πA))</td>
+</tr>
+<tr>
+<td><code>shape2D_MaximumDiameter</code></td>
+<td>largest distance between two polygon vertices (computed on the convex hull)</td>
 </tr>
 <tr>
 <td><code>shape2D_MajorAxisLength</code></td>
-<td>Length of the major axis</td>
+<td>4√λ_major</td>
 </tr>
 <tr>
 <td><code>shape2D_MinorAxisLength</code></td>
-<td>Length of the minor axis</td>
+<td>4√λ_minor</td>
 </tr>
 <tr>
 <td><code>shape2D_Elongation</code></td>
-<td>Ratio of minor to major axis</td>
-</tr>
-<tr>
-<td><code>shape2D_Flatness</code></td>
-<td>Same as elongation</td>
+<td>√(λ_minor / λ_major)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="shape-3d-features-16-features">Shape 3D Features (16 features)</h2>
-<p>3D-style shape features (calculated in 2D for histopathology).</p>
+<div class="admonition info">
+<p class="admonition-title">Polygon versus mesh</p>
+<p>QuRad measures the ROI polygon as drawn in QuPath. PyRadiomics reconstructs a marching-squares mesh from the
+rasterised mask, which cuts the corners of a pixel outline. For polygons that were themselves traced from a raster
+(e.g. label masks converted with marching squares, as in the validation benchmark) both agree exactly; for
+smooth or hand-drawn polygons the mesh perimeter is typically a few per cent longer and the mesh area slightly
+smaller (Supplementary Table S2 of the article quantifies this on synthetic shapes).</p>
+</div>
+<h2 id="glcm-features-23">GLCM features (23)</h2>
+<p>Gray-level co-occurrence matrix <code>p(i,j)</code> (symmetric, summed over four directions, normalised to sum 1), with marginals
+<code>p_x</code>, <code>p_y</code>, means <code>μ_x</code>, <code>μ_y</code>, standard deviations <code>σ_x</code>, <code>σ_y</code>, <code>N_g</code> = highest gray level present,
+<code>p_{x+y}(k)</code>, <code>p_{x−y}(k)</code>, entropies <code>HX</code>, <code>HY</code>, <code>HXY</code>, <code>HXY1</code>, <code>HXY2</code> (all base 2).</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>shape_VoxelVolume</code></td>
-<td>Area of the ROI</td>
-</tr>
-<tr>
-<td><code>shape_MeshVolume</code></td>
-<td>Same as area</td>
-</tr>
-<tr>
-<td><code>shape_SurfaceArea</code></td>
-<td>Perimeter</td>
-</tr>
-<tr>
-<td><code>shape_SurfaceVolumeRatio</code></td>
-<td>Perimeter to area ratio</td>
-</tr>
-<tr>
-<td><code>shape_Sphericity</code></td>
-<td>Circularity measure</td>
-</tr>
-<tr>
-<td><code>shape_Compactness1</code></td>
-<td>Compactness metric 1</td>
-</tr>
-<tr>
-<td><code>shape_Compactness2</code></td>
-<td>Compactness metric 2</td>
-</tr>
-<tr>
-<td><code>shape_SphericalDisproportion</code></td>
-<td>Inverse of sphericity</td>
-</tr>
-<tr>
-<td><code>shape_Maximum3DDiameter</code></td>
-<td>Diagonal of bounding box</td>
-</tr>
-<tr>
-<td><code>shape_Maximum2DDiameterSlice</code></td>
-<td>Same as 3D diameter</td>
-</tr>
-<tr>
-<td><code>shape_Maximum2DDiameterColumn</code></td>
-<td>Bounding box width</td>
-</tr>
-<tr>
-<td><code>shape_Maximum2DDiameterRow</code></td>
-<td>Bounding box height</td>
-</tr>
-<tr>
-<td><code>shape_MajorAxisLength</code></td>
-<td>Major axis length</td>
-</tr>
-<tr>
-<td><code>shape_MinorAxisLength</code></td>
-<td>Minor axis length</td>
-</tr>
-<tr>
-<td><code>shape_LeastAxisLength</code></td>
-<td>Same as minor axis</td>
-</tr>
-<tr>
-<td><code>shape_Elongation</code></td>
-<td>Minor/major axis ratio</td>
-</tr>
-</tbody>
-</table>
-<h2 id="glcm-features-23-features">GLCM Features (23 features)</h2>
-<p>Gray Level Co-occurrence Matrix features capture texture by analyzing spatial relationships between pixel pairs.</p>
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Description</th>
+<th>Definition</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>glcm_Autocorrelation</code></td>
-<td>Correlation of intensity pairs</td>
+<td>Σ i·j·p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_JointAverage</code></td>
-<td>Mean of the GLCM</td>
+<td>Σ i·p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_ClusterProminence</code></td>
-<td>Measure of asymmetry</td>
+<td>Σ (i + j − μ_x − μ_y)⁴ p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_ClusterShade</code></td>
-<td>Skewness of the GLCM</td>
+<td>Σ (i + j − μ_x − μ_y)³ p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_ClusterTendency</code></td>
-<td>Grouping of similar values</td>
+<td>Σ (i + j − μ_x − μ_y)² p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_Contrast</code></td>
-<td>Local intensity variation</td>
+<td>Σ (i − j)² p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_Correlation</code></td>
-<td>Linear dependency of gray levels</td>
-</tr>
-<tr>
-<td><code>glcm_JointEnergy</code></td>
-<td>Sum of squared GLCM elements</td>
-</tr>
-<tr>
-<td><code>glcm_JointEntropy</code></td>
-<td>Randomness of co-occurrences</td>
-</tr>
-<tr>
-<td><code>glcm_Idm</code></td>
-<td>Inverse Difference Moment (homogeneity)</td>
-</tr>
-<tr>
-<td><code>glcm_Idmn</code></td>
-<td>Normalized IDM</td>
-</tr>
-<tr>
-<td><code>glcm_Id</code></td>
-<td>Inverse Difference</td>
-</tr>
-<tr>
-<td><code>glcm_Idn</code></td>
-<td>Normalized ID</td>
-</tr>
-<tr>
-<td><code>glcm_InverseVariance</code></td>
-<td>Inverse of variance</td>
-</tr>
-<tr>
-<td><code>glcm_MaximumProbability</code></td>
-<td>Most frequent co-occurrence</td>
-</tr>
-<tr>
-<td><code>glcm_SumSquares</code></td>
-<td>Variance of GLCM</td>
+<td>Σ (i − μ_x)(j − μ_y) p(i,j) / (σ_x σ_y); 1 if σ_x σ_y = 0</td>
 </tr>
 <tr>
 <td><code>glcm_DifferenceAverage</code></td>
-<td>Mean of difference matrix</td>
+<td>Σ k p_{x−y}(k)</td>
 </tr>
 <tr>
 <td><code>glcm_DifferenceEntropy</code></td>
-<td>Entropy of difference matrix</td>
+<td>−Σ p_{x−y}(k) log₂ p_{x−y}(k)</td>
 </tr>
 <tr>
 <td><code>glcm_DifferenceVariance</code></td>
-<td>Variance of difference matrix</td>
+<td>Σ (k − DifferenceAverage)² p_{x−y}(k)</td>
 </tr>
 <tr>
-<td><code>glcm_SumAverage</code></td>
-<td>Mean of sum matrix</td>
+<td><code>glcm_JointEnergy</code></td>
+<td>Σ p(i,j)²</td>
 </tr>
 <tr>
-<td><code>glcm_SumEntropy</code></td>
-<td>Entropy of sum matrix</td>
+<td><code>glcm_JointEntropy</code></td>
+<td>−Σ p(i,j) log₂ p(i,j)</td>
 </tr>
 <tr>
 <td><code>glcm_Imc1</code></td>
-<td>Information Measure of Correlation 1</td>
+<td>(HXY − HXY1) / max(HX, HY)</td>
 </tr>
 <tr>
 <td><code>glcm_Imc2</code></td>
-<td>Information Measure of Correlation 2</td>
+<td>√(1 − e^{−2(HXY2 − HXY)})</td>
+</tr>
+<tr>
+<td><code>glcm_Idm</code></td>
+<td>Σ p(i,j) / (1 + (i − j)²)</td>
+</tr>
+<tr>
+<td><code>glcm_Idmn</code></td>
+<td>Σ p(i,j) / (1 + (i − j)²/N_g²)</td>
+</tr>
+<tr>
+<td><code>glcm_Id</code></td>
+<td>Σ p(i,j) / (1 + |i − j|)</td>
+</tr>
+<tr>
+<td><code>glcm_Idn</code></td>
+<td>Σ p(i,j) / (1 + |i − j|/N_g)</td>
+</tr>
+<tr>
+<td><code>glcm_InverseVariance</code></td>
+<td>Σ_{i≠j} p(i,j) / (i − j)²</td>
+</tr>
+<tr>
+<td><code>glcm_MaximumProbability</code></td>
+<td>max p(i,j)</td>
+</tr>
+<tr>
+<td><code>glcm_SumAverage</code></td>
+<td>Σ k p_{x+y}(k)</td>
+</tr>
+<tr>
+<td><code>glcm_SumEntropy</code></td>
+<td>−Σ p_{x+y}(k) log₂ p_{x+y}(k)</td>
+</tr>
+<tr>
+<td><code>glcm_SumSquares</code></td>
+<td>Σ (i − μ_x)² p(i,j)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="glrlm-features-16-features">GLRLM Features (16 features)</h2>
-<p>Gray Level Run Length Matrix features capture texture by analyzing consecutive pixels with the same intensity.</p>
+<h2 id="glrlm-features-16">GLRLM features (16)</h2>
+<p>Run-length matrix <code>P(i,j)</code> (gray level i, run length j) summed over four directions; <code>N_r</code> = number of runs,
+<code>N_p</code> = Σ_j j·P(i,j) (number of pixels counted over all directions, as in PyRadiomics), <code>p = P / N_r</code>.</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
+<th>Definition</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>glrlm_ShortRunEmphasis</code></td>
-<td>Distribution of short runs</td>
+<td>Σ p(i,j) / j²</td>
 </tr>
 <tr>
 <td><code>glrlm_LongRunEmphasis</code></td>
-<td>Distribution of long runs</td>
+<td>Σ p(i,j) j²</td>
 </tr>
 <tr>
 <td><code>glrlm_GrayLevelNonUniformity</code></td>
-<td>Variability of gray levels</td>
+<td>Σ_i (Σ_j P(i,j))² / N_r</td>
 </tr>
 <tr>
 <td><code>glrlm_GrayLevelNonUniformityNormalized</code></td>
-<td>Normalized GLNU</td>
+<td>Σ_i (Σ_j P(i,j))² / N_r²</td>
 </tr>
 <tr>
 <td><code>glrlm_RunLengthNonUniformity</code></td>
-<td>Variability of run lengths</td>
+<td>Σ_j (Σ_i P(i,j))² / N_r</td>
 </tr>
 <tr>
 <td><code>glrlm_RunLengthNonUniformityNormalized</code></td>
-<td>Normalized RLNU</td>
+<td>Σ_j (Σ_i P(i,j))² / N_r²</td>
 </tr>
 <tr>
 <td><code>glrlm_RunPercentage</code></td>
-<td>Ratio of runs to pixels</td>
+<td>N_r / N_p</td>
 </tr>
 <tr>
 <td><code>glrlm_GrayLevelVariance</code></td>
-<td>Variance of gray levels</td>
+<td>Σ (i − μ_i)² p(i,j)</td>
 </tr>
 <tr>
 <td><code>glrlm_RunVariance</code></td>
-<td>Variance of run lengths</td>
+<td>Σ (j − μ_j)² p(i,j)</td>
 </tr>
 <tr>
 <td><code>glrlm_RunEntropy</code></td>
-<td>Randomness of runs</td>
+<td>−Σ p(i,j) log₂ p(i,j)</td>
 </tr>
 <tr>
 <td><code>glrlm_LowGrayLevelRunEmphasis</code></td>
-<td>Distribution of low intensity runs</td>
+<td>Σ p(i,j) / i²</td>
 </tr>
 <tr>
 <td><code>glrlm_HighGrayLevelRunEmphasis</code></td>
-<td>Distribution of high intensity runs</td>
+<td>Σ p(i,j) i²</td>
 </tr>
 <tr>
 <td><code>glrlm_ShortRunLowGrayLevelEmphasis</code></td>
-<td>Short runs with low intensity</td>
+<td>Σ p(i,j) / (i² j²)</td>
 </tr>
 <tr>
 <td><code>glrlm_ShortRunHighGrayLevelEmphasis</code></td>
-<td>Short runs with high intensity</td>
+<td>Σ p(i,j) i² / j²</td>
 </tr>
 <tr>
 <td><code>glrlm_LongRunLowGrayLevelEmphasis</code></td>
-<td>Long runs with low intensity</td>
+<td>Σ p(i,j) j² / i²</td>
 </tr>
 <tr>
 <td><code>glrlm_LongRunHighGrayLevelEmphasis</code></td>
-<td>Long runs with high intensity</td>
+<td>Σ p(i,j) i² j²</td>
 </tr>
 </tbody>
 </table>
-<h2 id="glszm-features-16-features">GLSZM Features (16 features)</h2>
-<p>Gray Level Size Zone Matrix features capture texture by analyzing connected regions of similar intensity.</p>
+<h2 id="glszm-features-16">GLSZM features (16)</h2>
+<p>Size-zone matrix <code>P(i,j)</code> (gray level i, zone size j, zones 8-connected); <code>N_z</code> = number of zones, <code>N_p</code> = number of
+pixels, <code>p = P / N_z</code>. Definitions mirror the GLRLM ones with zone size in place of run length:
+<code>SmallAreaEmphasis</code>, <code>LargeAreaEmphasis</code>, <code>GrayLevelNonUniformity</code>, <code>GrayLevelNonUniformityNormalized</code>,
+<code>SizeZoneNonUniformity</code>, <code>SizeZoneNonUniformityNormalized</code>, <code>ZonePercentage</code> (= N_z / N_p), <code>GrayLevelVariance</code>,
+<code>ZoneVariance</code>, <code>ZoneEntropy</code>, <code>LowGrayLevelZoneEmphasis</code>, <code>HighGrayLevelZoneEmphasis</code>,
+<code>SmallAreaLowGrayLevelEmphasis</code>, <code>SmallAreaHighGrayLevelEmphasis</code>, <code>LargeAreaLowGrayLevelEmphasis</code>,
+<code>LargeAreaHighGrayLevelEmphasis</code>.</p>
+<h2 id="ngtdm-features-5">NGTDM features (5)</h2>
+<p>For each gray level i present: <code>n_i</code> pixels, <code>p_i = n_i / N</code>, <code>s_i</code> = Σ |i − mean of the 8-neighbourhood|
+(neighbours outside the ROI are ignored); <code>N_{g,p}</code> = number of gray levels present.</p>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>glszm_SmallAreaEmphasis</code></td>
-<td>Distribution of small zones</td>
-</tr>
-<tr>
-<td><code>glszm_LargeAreaEmphasis</code></td>
-<td>Distribution of large zones</td>
-</tr>
-<tr>
-<td><code>glszm_GrayLevelNonUniformity</code></td>
-<td>Variability of gray levels</td>
-</tr>
-<tr>
-<td><code>glszm_GrayLevelNonUniformityNormalized</code></td>
-<td>Normalized GLNU</td>
-</tr>
-<tr>
-<td><code>glszm_SizeZoneNonUniformity</code></td>
-<td>Variability of zone sizes</td>
-</tr>
-<tr>
-<td><code>glszm_SizeZoneNonUniformityNormalized</code></td>
-<td>Normalized SZNU</td>
-</tr>
-<tr>
-<td><code>glszm_ZonePercentage</code></td>
-<td>Ratio of zones to pixels</td>
-</tr>
-<tr>
-<td><code>glszm_GrayLevelVariance</code></td>
-<td>Variance of gray levels</td>
-</tr>
-<tr>
-<td><code>glszm_ZoneVariance</code></td>
-<td>Variance of zone sizes</td>
-</tr>
-<tr>
-<td><code>glszm_ZoneEntropy</code></td>
-<td>Randomness of zones</td>
-</tr>
-<tr>
-<td><code>glszm_LowGrayLevelZoneEmphasis</code></td>
-<td>Distribution of low intensity zones</td>
-</tr>
-<tr>
-<td><code>glszm_HighGrayLevelZoneEmphasis</code></td>
-<td>Distribution of high intensity zones</td>
-</tr>
-<tr>
-<td><code>glszm_SmallAreaLowGrayLevelEmphasis</code></td>
-<td>Small zones with low intensity</td>
-</tr>
-<tr>
-<td><code>glszm_SmallAreaHighGrayLevelEmphasis</code></td>
-<td>Small zones with high intensity</td>
-</tr>
-<tr>
-<td><code>glszm_LargeAreaLowGrayLevelEmphasis</code></td>
-<td>Large zones with low intensity</td>
-</tr>
-<tr>
-<td><code>glszm_LargeAreaHighGrayLevelEmphasis</code></td>
-<td>Large zones with high intensity</td>
-</tr>
-</tbody>
-</table>
-<h2 id="ngtdm-features-5-features">NGTDM Features (5 features)</h2>
-<p>Neighborhood Gray Tone Difference Matrix features capture texture by comparing pixels to their neighborhood average.</p>
-<table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Description</th>
+<th>Definition</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ngtdm_Coarseness</code></td>
-<td>Spatial rate of change (inverse of local variation)</td>
+<td>1 / Σ p_i s_i (10⁶ if the sum is 0)</td>
 </tr>
 <tr>
 <td><code>ngtdm_Contrast</code></td>
-<td>Range of intensities and spatial frequency</td>
+<td>[Σ_i Σ_j p_i p_j (i − j)² / (N_{g,p}(N_{g,p} − 1))] · [Σ s_i / N]</td>
 </tr>
 <tr>
 <td><code>ngtdm_Busyness</code></td>
-<td>Spatial frequency of intensity changes</td>
+<td>Σ p_i s_i / Σ_{i≠j} |i p_i − j p_j|</td>
 </tr>
 <tr>
 <td><code>ngtdm_Complexity</code></td>
-<td>Rapid intensity changes</td>
+<td>Σ_i Σ_j |i − j| (p_i s_i + p_j s_j) / (p_i + p_j) / N</td>
 </tr>
 <tr>
 <td><code>ngtdm_Strength</code></td>
-<td>Primitiveness of texture</td>
+<td>Σ_i Σ_j (p_i + p_j)(i − j)² / Σ s_i</td>
 </tr>
 </tbody>
 </table>
-<h2 id="gldm-features-15-features">GLDM Features (15 features)</h2>
-<p>Gray Level Dependence Matrix features capture texture by analyzing how many connected pixels share similar intensities.</p>
+<h2 id="gldm-features-14">GLDM features (14)</h2>
+<p>Dependence matrix <code>P(i,j)</code>: gray level i, dependence j = 1 + number of 8-neighbours with the same gray level (α = 0);
+<code>N_z</code> = number of dependence zones (= number of pixels), <code>p = P / N_z</code>. Features: <code>SmallDependenceEmphasis</code>,
+<code>LargeDependenceEmphasis</code>, <code>GrayLevelNonUniformity</code>, <code>DependenceNonUniformity</code>,
+<code>DependenceNonUniformityNormalized</code>, <code>GrayLevelVariance</code>, <code>DependenceVariance</code>, <code>DependenceEntropy</code>,
+<code>LowGrayLevelEmphasis</code>, <code>HighGrayLevelEmphasis</code>, <code>SmallDependenceLowGrayLevelEmphasis</code>,
+<code>SmallDependenceHighGrayLevelEmphasis</code>, <code>LargeDependenceLowGrayLevelEmphasis</code>,
+<code>LargeDependenceHighGrayLevelEmphasis</code> (same algebra as GLRLM with dependence in place of run length).</p>
+<h2 id="legacy-3d-named-shape-features-16-optional">Legacy 3D-named shape features (16, optional)</h2>
+<div class="admonition warning">
+<p class="admonition-title">Not recommended for 2D histology</p>
+<p>These features exist only so that pipelines expecting PyRadiomics' 3D <code>shape_*</code> column names keep working. They
+are computed from the same 2D polygon and mask as the <code>shape2D</code> class, and they are <strong>not</strong> numerically equivalent
+to PyRadiomics' 3D shape features, which treat a single slice as a slab of unit thickness. Enable them only if you
+know why you need them; use <code>shape2D_*</code> otherwise.</p>
+</div>
 <table>
 <thead>
 <tr>
 <th>Feature</th>
-<th>Description</th>
+<th>How QuRad computes it</th>
+<th>Equivalent 2D feature</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>gldm_SmallDependenceEmphasis</code></td>
-<td>Distribution of small dependencies</td>
+<td><code>shape_VoxelVolume</code></td>
+<td>number of pixels</td>
+<td><code>shape2D_PixelSurface</code></td>
 </tr>
 <tr>
-<td><code>gldm_LargeDependenceEmphasis</code></td>
-<td>Distribution of large dependencies</td>
+<td><code>shape_MeshVolume</code></td>
+<td>polygon area</td>
+<td><code>shape2D_MeshSurface</code></td>
 </tr>
 <tr>
-<td><code>gldm_GrayLevelNonUniformity</code></td>
-<td>Variability of gray levels</td>
+<td><code>shape_SurfaceArea</code></td>
+<td>polygon perimeter</td>
+<td><code>shape2D_Perimeter</code></td>
 </tr>
 <tr>
-<td><code>gldm_DependenceNonUniformity</code></td>
-<td>Variability of dependencies</td>
+<td><code>shape_SurfaceVolumeRatio</code></td>
+<td>P / A</td>
+<td><code>shape2D_PerimeterSurfaceRatio</code></td>
 </tr>
 <tr>
-<td><code>gldm_DependenceNonUniformityNormalized</code></td>
-<td>Normalized DNU</td>
+<td><code>shape_Sphericity</code></td>
+<td>2√(πA) / P</td>
+<td><code>shape2D_Sphericity</code></td>
 </tr>
 <tr>
-<td><code>gldm_DependencePercentage</code></td>
-<td>Ratio of dependencies to pixels</td>
+<td><code>shape_Compactness1</code></td>
+<td>A / (√π · P^1.5)</td>
+<td>–</td>
 </tr>
 <tr>
-<td><code>gldm_GrayLevelVariance</code></td>
-<td>Variance of gray levels</td>
+<td><code>shape_Compactness2</code></td>
+<td>36π A² / P³</td>
+<td>–</td>
 </tr>
 <tr>
-<td><code>gldm_DependenceVariance</code></td>
-<td>Variance of dependencies</td>
+<td><code>shape_SphericalDisproportion</code></td>
+<td>P / (2√(πA))</td>
+<td><code>shape2D_SphericalDisproportion</code></td>
 </tr>
 <tr>
-<td><code>gldm_DependenceEntropy</code></td>
-<td>Randomness of dependencies</td>
+<td><code>shape_Maximum3DDiameter</code>, <code>shape_Maximum2DDiameterSlice</code></td>
+<td>maximum polygon diameter</td>
+<td><code>shape2D_MaximumDiameter</code></td>
 </tr>
 <tr>
-<td><code>gldm_LowGrayLevelEmphasis</code></td>
-<td>Distribution of low intensity dependencies</td>
+<td><code>shape_Maximum2DDiameterColumn</code>, <code>shape_Maximum2DDiameterRow</code></td>
+<td>bounding-box width, height</td>
+<td>–</td>
 </tr>
 <tr>
-<td><code>gldm_HighGrayLevelEmphasis</code></td>
-<td>Distribution of high intensity dependencies</td>
+<td><code>shape_MajorAxisLength</code>, <code>shape_MinorAxisLength</code>, <code>shape_Elongation</code></td>
+<td>as in <code>shape2D</code></td>
+<td><code>shape2D_*</code></td>
 </tr>
 <tr>
-<td><code>gldm_SmallDependenceLowGrayLevelEmphasis</code></td>
-<td>Small dependencies with low intensity</td>
-</tr>
-<tr>
-<td><code>gldm_SmallDependenceHighGrayLevelEmphasis</code></td>
-<td>Small dependencies with high intensity</td>
-</tr>
-<tr>
-<td><code>gldm_LargeDependenceLowGrayLevelEmphasis</code></td>
-<td>Large dependencies with low intensity</td>
-</tr>
-<tr>
-<td><code>gldm_LargeDependenceHighGrayLevelEmphasis</code></td>
-<td>Large dependencies with high intensity</td>
+<td><code>shape_LeastAxisLength</code></td>
+<td>minor axis length</td>
+<td><code>shape2D_MinorAxisLength</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="further-reading">Further Reading</h2>
-<p>For detailed mathematical definitions, see the <a href="https://pyradiomics.readthedocs.io/en/latest/features.html">PyRadiomics documentation</a>.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>Mathematical background for every feature: <a href="https://pyradiomics.readthedocs.io/en/latest/features.html">PyRadiomics feature documentation</a>
+and the IBSI reference manual. The validation against PyRadiomics is described in <code>notebooks/validation.ipynb</code>.</p>
 
 
 

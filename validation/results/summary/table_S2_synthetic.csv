@@ -1,0 +1,26 @@
+case,roi,n_pixels,n_compared,n_exact,pyradiomics,non_exact
+border,border_topleft,400,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+border,border_right,400,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+border,border_crossing,256,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+checkerboard,checker_square,400,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+colour,colour_circle,1264,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+colour,colour_square,900,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+gradient,gradient_rect,1920,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+large,large_512,262144,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+large,large_circle,196350,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+nearuniform,near_uniform_same_bin,225,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+nearuniform,near_uniform_two_bins,900,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_circle,712,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_bar_1x40,40,0,0,"refused: mask has too few dimensions (number of dimensions 1, minimum required ",
+noise,noise_bar_2x40,80,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_diagonal,160,103,98,ok,"MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_star,493,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_ring,800,103,98,ok,"MaximumDiameter, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+noise,noise_subpixel_square,315,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+tiny,tiny_1px,1,0,0,refused: mask only contains 1 segmented voxel! Cannot extract features for a si,
+tiny,tiny_1x2,2,0,0,"refused: mask has too few dimensions (number of dimensions 1, minimum required ",
+tiny,tiny_2x2,4,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+tiny,tiny_3x3,9,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+tiny,tiny_5x5,25,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+twolevel,two_level,1600,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"
+uniform,uniform_square,900,103,97,ok,"MaximumDiameter, MeshSurface, Perimeter, PerimeterSurfaceRatio, SphericalDisproportion, Sphericity"

@@ -12,7 +12,7 @@ This guide walks through a complete radiomics workflow: from an image with detec
 ```
 
 1. **Prepare**: Load an image with cell detections or annotations in QuPath
-2. **Extract**: Run QuRad — from the Extensions menu or the script editor — to compute 120 features per object
+2. **Extract**: Run QuRad — from the Extensions menu or the script editor — to compute 103 features per object (119 with the optional legacy shape class)
 3. **Visualize**: Use measurement maps to explore spatial patterns
 4. **Export**: Save the CSV for further analysis (classification, clustering, etc.)
 
@@ -49,7 +49,7 @@ If you have annotations from external tools:
 
 ## Step 2: Run QuRad
 
-QuRad can be run from the **extension menu** (recommended) or the **script editor**. Both compute the same 120 features.
+QuRad can be run from the **extension menu** (recommended) or the **script editor**. Both compute the same features (103 by default).
 
 ### Option A: Extension menu
 
@@ -88,7 +88,7 @@ Processed 5000/5000 (892.3 objects/sec)
 Complete
 ================================================================================
 Processed: 5000 objects
-Features per object: 120
+Features per object: 103
 ```
 
 ## Step 3: Visualize in QuPath
@@ -145,7 +145,7 @@ You can also export via QuPath's built-in export:
 
 ## What Next?
 
-The 120 radiomics features extracted by QuRad provide quantitative descriptors that can be used for a variety of downstream analyses:
+The radiomic features extracted by QuRad provide quantitative descriptors that can be used for a variety of downstream analyses:
 
 - **Cell classification**: distinguish cell populations based on morphological and texture differences (e.g., tumor cells vs. lymphocytes)
 - **Tissue region characterization**: describe the composition and architecture of tissue compartments (e.g., invasive tumor vs. stroma vs. healthy glands)

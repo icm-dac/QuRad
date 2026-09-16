@@ -8,7 +8,7 @@ import qupath.lib.gui.extensions.QuPathExtension
 class QuRadExtension implements QuPathExtension {
 
     String name = "QuRad - Radiomics feature extraction"
-    String description = "Extracts 120 PyRadiomics-compatible radiomics features from cell detections and annotations."
+    String description = "Extracts 119 radiomics features (103 enabled by default) from cell detections and annotations."
     Version QuPathVersion = Version.parse("v0.6.0")
 
     private boolean isInstalled = false

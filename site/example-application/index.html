@@ -607,7 +607,7 @@
 </code></pre></div>
 <ol>
 <li><strong>Prepare</strong>: Load an image with cell detections or annotations in QuPath</li>
-<li><strong>Extract</strong>: Run QuRad — from the Extensions menu or the script editor — to compute 120 features per object</li>
+<li><strong>Extract</strong>: Run QuRad — from the Extensions menu or the script editor — to compute 103 features per object (119 with the optional legacy shape class)</li>
 <li><strong>Visualize</strong>: Use measurement maps to explore spatial patterns</li>
 <li><strong>Export</strong>: Save the CSV for further analysis (classification, clustering, etc.)</li>
 </ol>
@@ -634,7 +634,7 @@
 <li>Annotations appear as detection objects</li>
 </ol>
 <h2 id="step-2-run-qurad">Step 2: Run QuRad</h2>
-<p>QuRad can be run from the <strong>extension menu</strong> (recommended) or the <strong>script editor</strong>. Both compute the same 120 features.</p>
+<p>QuRad can be run from the <strong>extension menu</strong> (recommended) or the <strong>script editor</strong>. Both compute the same features (103 by default).</p>
 <h3 id="option-a-extension-menu">Option A: Extension menu</h3>
 <ol>
 <li>Go to <strong>Extensions → QuRad → Extract radiomics features…</strong></li>
@@ -670,7 +670,7 @@
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>Complete
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>================================================================================
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>Processed: 5000 objects
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>Features per object: 120
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>Features per object: 103
 </code></pre></div>
 <h2 id="step-3-visualize-in-qupath">Step 3: Visualize in QuPath</h2>
 <h3 id="measurement-maps">Measurement Maps</h3>
@@ -712,7 +712,7 @@
 <li>Choose which measurements to include</li>
 </ol>
 <h2 id="what-next">What Next?</h2>
-<p>The 120 radiomics features extracted by QuRad provide quantitative descriptors that can be used for a variety of downstream analyses:</p>
+<p>The radiomic features extracted by QuRad provide quantitative descriptors that can be used for a variety of downstream analyses:</p>
 <ul>
 <li><strong>Cell classification</strong>: distinguish cell populations based on morphological and texture differences (e.g., tumor cells vs. lymphocytes)</li>
 <li><strong>Tissue region characterization</strong>: describe the composition and architecture of tissue compartments (e.g., invasive tumor vs. stroma vs. healthy glands)</li>

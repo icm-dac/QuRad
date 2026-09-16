@@ -11,7 +11,7 @@
 
 > **Comprehensive radiomics feature extraction for QuPath**
 > 
-> Extract 120 pyRadiomics-compatible features from cell detections and annotations
+> Extract PyRadiomics-validated radiomic features from cell detections and annotations, inside QuPath
 
 📖 **Documentation:** https://icm-dac.github.io/QuRad/
 
@@ -19,28 +19,28 @@
 
 ## Features
 
-- **120 Radiomics Features** - Complete pyRadiomics feature set
-- **8 Feature Classes** - First-order, Shape 2D/3D, GLCM, GLRLM, GLSZM, NGTDM, GLDM
-- **Fast Processing** - up to 200 cells/second
-- **CSV Export** - Ready for machine learning workflows
-- **Batch Processing** - Process entire slides with 100k+ cells
+- **103 radiomic features by default** (119 with the optional legacy shape class), each validated feature by feature against PyRadiomics 3.0.1
+- **7 feature classes** - First-order, Shape 2D, GLCM, GLRLM, GLSZM, NGTDM, GLDM (plus optional legacy 3D-named shape)
+- **Fast, single-threaded processing** - about 1,900 nuclei/s in steady state on a server CPU (25,360 nuclei in 13.6 s; see the article's benchmark)
+- **CSV + settings export** - one CSV per image with full metadata and a JSON file recording every parameter
+- **Batch processing** - whole slides with 100k+ cells
 
 ---
 
 ## Feature Classes
 
-| Class | Features | Description |
-|-------|----------|-------------|
-| **First-order** | 19 | Intensity statistics (mean, variance, entropy, etc.) |
-| **Shape 2D** | 10 | 2D geometric features (area, perimeter, sphericity) |
-| **Shape 3D** | 16 | 3D geometric features (volume, surface area) |
-| **GLCM** | 23 | Gray Level Co-occurrence Matrix texture features |
-| **GLRLM** | 16 | Gray Level Run Length Matrix features |
-| **GLSZM** | 16 | Gray Level Size Zone Matrix features |
-| **NGTDM** | 5 | Neighborhood Gray Tone Difference Matrix |
-| **GLDM** | 15 | Gray Level Dependence Matrix features |
+| Class | Features | Default | Description |
+|-------|----------|---------|-------------|
+| **First-order** | 19 | on | Intensity statistics (mean, variance, entropy, etc.) |
+| **Shape 2D** | 10 | on | 2D geometric features (area, perimeter, sphericity, axis lengths) |
+| **GLCM** | 23 | on | Gray Level Co-occurrence Matrix texture features |
+| **GLRLM** | 16 | on | Gray Level Run Length Matrix features |
+| **GLSZM** | 16 | on | Gray Level Size Zone Matrix features |
+| **NGTDM** | 5 | on | Neighborhood Gray Tone Difference Matrix |
+| **GLDM** | 14 | on | Gray Level Dependence Matrix features |
+| **Shape (legacy 3D names)** | 16 | off | 2D quantities under PyRadiomics' 3D names; not recommended for 2D histology |
 
-**Total: 120 features + 5 metadata columns = 125 CSV columns**
+**Default output: 103 features + 9 metadata columns = 112 CSV columns** (128 with the legacy class). See the [feature reference](https://icm-dac.github.io/QuRad/features/) for definitions, conventions and the PyRadiomics mapping.
 
 ---
 
@@ -77,9 +77,8 @@ def processAnnotations = false
 
 ### Output
 ```
-slide_name_ALL_120_FEATURES_20251116_220656.csv
-├── 184,024 rows (one per cell)
-└── 125 columns (120 features + 5 metadata)
+slide_name_radiomics_20260904_120000.csv            (one row per object, 112 columns)
+slide_name_radiomics_20260904_120000_settings.json  (software/QuPath version, image, calibration, all parameters)
 ```
 
 ---
@@ -88,13 +87,19 @@ slide_name_ALL_120_FEATURES_20251116_220656.csv
 
 ```groovy
 def settings = [
-    binWidth: 25,              // Intensity binning width
+    binWidth: 25,              // Intensity binning width (PyRadiomics default)
     voxelArrayShift: 0,        // Intensity shift
-    force2D: true,             // Force 2D processing
-    distances: [1],            // Pixel distances for texture
-    angles: 4                  // Number of angles for GLCM
+    force2D: true,             // All features are 2D
+    distances: [1],            // GLCM pixel distance
+    angles: 4                  // Four directions, matrices summed (PyRadiomics weightingNorm='no_weighting')
 ]
 ```
+
+Input images must be 8-bit RGB brightfield images. Grayscale conversion, discretisation and mask conventions are fixed and documented in the feature reference.
+
+## Validation
+
+`notebooks/validation.ipynb` compares every feature with PyRadiomics 3.0.1 on identical masks: the bundled breast-cancer benchmark tile (410 cells), 20 PUMA melanoma tiles (>8,000 nuclei) and deterministic synthetic images with analytically known values. `validation/` contains the scripts (headless runner, PyRadiomics driver, agreement metrics, benchmark). Unit tests: `cd extension && ./gradlew test`.
 
 ---
 
@@ -127,3 +132,25 @@ MIT License - Free to use for research and commercial applications
 ## Acknowledgments
 
 Inspired by pyRadiomics and designed for seamless QuPath integration
+
+## Reproducing the results
+
+Everything reported in the paper comes out of three notebooks. They read the feature tables
+included here, so no image processing or QuPath installation is needed.
+
+```bash
+pip install -r requirements.txt
+jupyter lab notebooks/
+```
+
+| Notebook | What it reproduces | Runtime |
+|---|---|---|
+| `notebooks/validation.ipynb` | Feature-by-feature agreement with PyRadiomics 3.0.1, and the synthetic edge cases | ~15 s |
+| `notebooks/example_application_puma.ipynb` | Tumour vs lymphocyte classification on 20 PUMA melanoma tiles | ~9 min |
+| `notebooks/example_application_tiger.ipynb` | Tissue-compartment classification on 6 TIGER slides | ~40 s |
+
+Only the first notebook needs PyRadiomics installed; the other two do not.
+
+[`REPOSITORY.md`](REPOSITORY.md) explains what every directory and file in this repository is
+for. TIGER uses explicitly archived version-0.3 features; its whole-slide images are not
+redistributable and are not included.

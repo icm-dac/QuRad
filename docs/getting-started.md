@@ -67,9 +67,13 @@ Drag the jar onto a running QuPath window (or use **Extensions → Manage extens
 
 1. Open your project and select an image with detections/annotations
 2. Go to **Extensions → QuRad → Extract radiomics features…**
-3. Adjust the settings in the dialog (bin width, which objects, which feature classes, output options) and click **OK**
+3. Adjust the settings in the dialog (bin width, GLCM distance, which objects, which feature classes, output options) and click **OK**
 
-The dialog mirrors the [configuration](#configuration) options described below. Results are written to the measurement table and/or a timestamped CSV, exactly like the script.
+The dialog mirrors the [configuration](#configuration) options described below. Results are written to the measurement table and/or a timestamped CSV (plus a `_settings.json` file), exactly like the script.
+
+!!! warning "Image type"
+    QuRad works on **8-bit RGB brightfield images** (the standard for H&E whole-slide images). Fluorescence,
+    multichannel or 16-bit images are refused with an explicit message.
 
 ## Option B — Run the script
 
@@ -113,18 +117,30 @@ def settings = [
     binWidth: 25,              // Intensity binning width (PyRadiomics default: 25)
     voxelArrayShift: 0,        // Intensity shift before binning
     force2D: true,             // Force 2D processing (recommended for histopathology)
-    distances: [1],            // Pixel distances for texture computation
-    angles: 4                  // Number of angles for GLCM (4 = horizontal, vertical, both diagonals)
+    distances: [1],            // GLCM pixel distance
+    angles: 4                  // GLCM/GLRLM directions (fixed: 0, 45, 90, 135 degrees, matrices summed)
 ]
 ```
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `binWidth` | `25` | Intensity discretization width. Smaller values capture finer intensity differences but may be sensitive to noise. Use `25` to match PyRadiomics defaults. |
-| `voxelArrayShift` | `0` | Constant value added to all intensities before feature calculation. |
-| `force2D` | `true` | Calculate all features in 2D mode. Appropriate for histopathology images. |
-| `distances` | `[1]` | Pixel distances for GLCM calculation. `[1]` considers only immediately adjacent pixels. |
-| `angles` | `4` | Number of angles for GLCM: horizontal, vertical, and both diagonals. |
+| `binWidth` | `25` | Fixed bin width for intensity discretisation of the 0–255 gray scale (bins aligned to multiples of the bin width from 0, as in PyRadiomics). Smaller values capture finer intensity differences but are more sensitive to noise. |
+| `voxelArrayShift` | `0` | Constant added to all intensities before `Energy`, `TotalEnergy` and `RootMeanSquared` are computed. |
+| `force2D` | `true` | All features are two-dimensional; this flag is kept for PyRadiomics compatibility and cannot be changed. |
+| `distances` | `[1]` | Offset in **pixels** between co-occurring pixels for the GLCM. Only the first value is used. |
+| `angles` | `4` | Informational: GLCM and GLRLM always use the four in-plane directions and sum the matrices (PyRadiomics `weightingNorm='no_weighting'`). |
+
+All other conventions (grayscale conversion, pixel-centre mask rule, edge-case handling) are fixed and documented in the
+[Feature Reference](features.md#conventions-that-determine-the-values).
+
+!!! note "Physical scale"
+    Features are computed at the image's native resolution, in pixel units. A GLCM distance of 1 pixel therefore
+    corresponds to a different physical distance on a 0.25 µm/px slide than on a 0.5 µm/px slide. QuRad records the
+    pixel calibration of every image in the CSV (`PixelWidth_um`, `PixelHeight_um`) and in the settings file so that
+    you can account for it; when comparing slides scanned at different resolutions, either resample the images to a
+    common resolution in QuPath or set `distances` per slide (e.g. `[2]` on a 0.25 µm/px slide to match `[1]` on a
+    0.5 µm/px slide). Length and area features are reported in pixels and can be converted with the calibration
+    columns.
 
 ### Feature selection
 
@@ -133,27 +149,32 @@ Enable or disable specific feature classes:
 ```groovy
 def enabledFeatures = [
     'firstorder': true,        // 19 intensity statistics
-    'shape': true,             // 16 3D-style shape features
     'shape2D': true,           // 10 2D shape features
     'glcm': true,              // 23 GLCM texture features
     'glrlm': true,             // 16 GLRLM texture features
     'glszm': true,             // 16 GLSZM texture features
     'ngtdm': true,             // 5 NGTDM texture features
-    'gldm': true               // 15 GLDM texture features
+    'gldm': true,              // 14 GLDM texture features
+    'shape': false             // 16 legacy 3D-named shape features (2D quantities; not recommended)
 ]
 ```
+
+The default selection yields **103 features**, all of which are two-dimensional quantities with a direct PyRadiomics
+equivalent. The optional `shape` class reports 2D quantities under PyRadiomics' 3D shape names; it is disabled by
+default because those names suggest measurements that do not exist for a single histology section (see the
+[Feature Reference](features.md#legacy-3d-named-shape-features-16-optional)).
 
 !!! example "Extract only intensity and shape features"
     ```groovy
     def enabledFeatures = [
         'firstorder': true,
-        'shape': false,
         'shape2D': true,
         'glcm': false,
         'glrlm': false,
         'glszm': false,
         'ngtdm': false,
-        'gldm': false
+        'gldm': false,
+        'shape': false
     ]
     ```
 
@@ -165,7 +186,7 @@ def exportCSV = true           // Save results to a CSV file
 def addToMeasurements = true   // Add features to QuPath's measurement table
 ```
 
-- **`exportCSV`**: saves all features to a timestamped CSV file in the `radiomics` folder of your project.
+- **`exportCSV`**: saves all features to a timestamped CSV file in the `radiomics` folder of your project, together with a `_settings.json` file that records the software version, QuPath version, image name, pixel calibration, all parameters and conventions, and the enabled feature classes.
 - **`addToMeasurements`**: adds features to QuPath's measurement system, enabling measurement maps and the measurements table.
 
 ## Output
@@ -177,25 +198,39 @@ The CSV file is saved to your project's `radiomics` folder with a timestamped fi
 ```
 your_project/
 └── radiomics/
-    └── image_name_radiomics_20250126_143052.csv
+    ├── image_name_radiomics_20260904_143052.csv
+    └── image_name_radiomics_20260904_143052_settings.json
 ```
 
-The CSV contains one row per object and **125 columns** (120 features + 5 metadata):
+The CSV contains one row per object and, with the default settings, **112 columns** (103 features + 9 metadata
+columns; 128 columns if the legacy `shape` class is enabled):
 
 | Column | Description |
 |--------|-------------|
-| `ObjectID` | Unique identifier |
+| `Image` | Image name (for multi-slide analyses) |
+| `ObjectID` | Unique identifier of the QuPath object |
 | `ObjectType` | Detection or Annotation |
 | `Classification` | Object class (if assigned) |
-| `Centroid_X`, `Centroid_Y` | Spatial coordinates |
+| `Centroid_X`, `Centroid_Y` | Centroid in pixel coordinates |
+| `NumPixels` | Number of pixels inside the ROI (and inside the image) used for the intensity/texture features |
+| `PixelWidth_um`, `PixelHeight_um` | Pixel calibration of the image (empty if unknown) |
 | `firstorder_*` | 19 first-order features |
 | `shape2D_*` | 10 shape features |
-| `shape_*` | 16 3D shape features |
 | `glcm_*` | 23 GLCM features |
 | `glrlm_*` | 16 GLRLM features |
 | `glszm_*` | 16 GLSZM features |
 | `ngtdm_*` | 5 NGTDM features |
-| `gldm_*` | 15 GLDM features |
+| `gldm_*` | 14 GLDM features |
+| `shape_*` | 16 legacy 3D-named shape features (only if enabled) |
+
+Values are written with full double precision. Objects whose polygon contains no pixel centre are skipped and
+reported in the log.
+
+!!! tip "Minimum object size"
+    Texture matrices of very small objects are degenerate (a 1-pixel ROI has one gray level and no pixel pairs).
+    PyRadiomics refuses masks smaller than 2 pixels in any dimension; QuRad computes features for any non-empty ROI but
+    we recommend filtering objects with `NumPixels` below about 10 pixels downstream, and checking that nuclei are
+    segmented at a resolution where they span at least a few dozen pixels.
 
 ### QuPath measurements
 
@@ -211,10 +246,9 @@ After running the script, you should see output like:
 
 ```
 ================================================================================
-QuPath Radiomics Extraction - v3 (PyRadiomics-style binning)
+QuPath Radiomics Extraction - QuRad 0.4.0
 ================================================================================
   ✓ firstorder
-  ✓ shape
   ✓ shape2D
   ✓ glcm
   ✓ glrlm

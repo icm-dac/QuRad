@@ -1,11 +1,12 @@
 # QuRad — QuPath extension
 
-This is the packaged QuPath extension build of QuRad. It exposes the same
-PyRadiomics-compatible feature extraction as the standalone script
-[`src/QuPath_Radiomics_v3.groovy`](../src/QuPath_Radiomics_v3.groovy) — the numerics in
+This is the packaged QuPath extension build of QuRad. It exposes the same feature
+extraction as the standalone script
+[`src/QuPath_Radiomics_v3.groovy`](../src/QuPath_Radiomics_v3.groovy): the numerics in
 [`RadiomicsCalculator.groovy`](src/main/groovy/qupath/ext/qurad/RadiomicsCalculator.groovy)
-are ported **verbatim** from that validated script, so output matches the published
-validation (median Pearson *r* = 0.9992 vs PyRadiomics).
+are the source of truth and the script's helper section is generated from them, so both
+produce identical output. Every default feature agrees with PyRadiomics 3.0.1 to
+floating-point precision on identical masks (see `notebooks/validation.ipynb`).
 
 ## Requirements
 
@@ -30,17 +31,33 @@ unit tests that guard the feature numerics.
 
 Drag `qupath-extension-qurad-<version>.jar` onto a running QuPath window, or use
 **Extensions → Manage extensions**. Then run it via **Extensions → QuRad → Extract
-radiomics features…**, which opens a settings dialog (bin width, which objects, which
-feature classes, CSV/measurement output).
+radiomics features…**, which opens a settings dialog (bin width, GLCM distance, which objects,
+which feature classes, CSV/measurement output). The optional legacy 3D-named shape class is
+off by default.
+
+## Headless use and benchmarking
+
+The test source set contains a headless runner that applies the calculator to an image plus a
+GeoJSON file of objects without a QuPath GUI (used for the PyRadiomics validation and the
+benchmark in the article):
+
+```bash
+./gradlew headless -PrunnerArgs="--image tile.tif --objects nuclei.geojson --out features.csv \
+    [--shape true] [--binWidth 25] [--distance 1] [--classes firstorder,glcm] [--repeat N] \
+    [--masks masks_dir] [--grayOut gray.png] [--timing timing.csv] [--json settings.json]"
+./gradlew profile -PrunnerArgs="tile.tif nuclei.geojson 200"   # per-stage timing
+```
 
 ## Layout
 
 | Path | Purpose |
 |------|---------|
-| `src/main/groovy/qupath/ext/qurad/RadiomicsCalculator.groovy` | Feature math, ported verbatim from the script (lines 51–1207). **Do not change numerics without re-running `notebooks/validation.ipynb`.** |
+| `src/main/groovy/qupath/ext/qurad/RadiomicsCalculator.groovy` | Feature math (statically compiled hot paths), rasterisation, CSV and settings-JSON writers. **Do not change numerics without re-running `notebooks/validation.ipynb`.** |
 | `src/main/groovy/qupath/ext/qurad/QuRadExtension.groovy` | Registers the menu command. |
-| `src/main/groovy/qupath/ext/qurad/RadiomicsCommand.groovy` | Settings dialog + run loop + CSV/measurement output. |
-| `src/test/groovy/qupath/ext/qurad/RadiomicsCalculatorTest.groovy` | Regression test locking known feature values. |
+| `src/main/groovy/qupath/ext/qurad/RadiomicsCommand.groovy` | Settings dialog + run loop + measurement output. |
+| `src/test/groovy/qupath/ext/qurad/RadiomicsCalculatorTest.groovy` | Unit tests with analytically known values (uniform, checkerboard, tiny inputs, rasterisation rule, NGTDM isolated pixels). |
+| `src/test/groovy/qupath/ext/qurad/HeadlessRunner.groovy` | Headless extraction (+ mask/grayscale export) for validation and benchmarking. |
+| `src/test/groovy/qupath/ext/qurad/Profile.groovy` | Per-stage profiler. |
 
 CI builds and tests this project on every push touching `extension/` (see
 `.github/workflows/extension-build.yml`).
