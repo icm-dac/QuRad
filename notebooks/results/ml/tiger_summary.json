@@ -442,7 +442,7 @@
   "shape_VoxelVolume": 0
  },
  "versions": {
-  "qurad": "0.3.0 (archived feature tables)",
+  "qurad": "0.4.0",
   "sklearn": "1.7.2",
   "numpy": "1.26.4",
   "umap": "0.5.11"
