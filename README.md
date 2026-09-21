@@ -74,8 +74,20 @@ jupyter lab notebooks/
 
 Only the first notebook needs PyRadiomics installed. The two application notebooks read the
 QuRad output exactly as QuPath writes it (`example_data/*/radiomics/`), so if you re-extract in
-QuPath and drop the new files there, they analyse yours. `REPOSITORY.md` explains what every
-folder and file is for.
+QuPath and drop the new files there, they analyse yours.
+
+Notebook 1 compares QuRad with PyRadiomics on identical pixel masks; both sides are in
+`example_data/*/pyradiomics/` (headless QuRad run, exported masks, PyRadiomics output). To
+regenerate them from the images:
+
+```bash
+cd extension && ./gradlew headless -PrunnerArgs="--image <tif> --objects <geojson> --out <dir>/qurad.csv --masks <dir>/masks --grayOut <dir>/gray.png"
+python notebooks/lib/pyradiomics_extract.py --image <tif> --gray <dir>/gray.png --masks <dir>/masks --out <dir>/pyradiomics_noweighting.csv
+```
+
+The code the notebooks import is in `notebooks/lib/`; everything they write goes to
+`notebooks/results/` (tables, figures, per-object predictions). `QURAD_DATA` and
+`QURAD_RESULTS` override the input and output folders.
 
 ## Data
 

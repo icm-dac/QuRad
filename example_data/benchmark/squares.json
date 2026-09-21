@@ -1,0 +1,74 @@
+{
+  "software": "QuRad",
+  "version": "0.4.0",
+  "qupathVersion": "0.6.0",
+  "image": "bench_squares.png",
+  "imageWidth": 1100,
+  "imageHeight": 1100,
+  "isRGB": true,
+  "grayscale": "floor((299 R + 587 G + 114 B) / 1000) on 8-bit RGB",
+  "binWidth": 25,
+  "voxelArrayShift": 0,
+  "force2D": true,
+  "glcmDistance_px": 1,
+  "glcmAngles": [
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      -1,
+      1
+    ]
+  ],
+  "glrlmAngles": [
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      -1
+    ]
+  ],
+  "angleAggregation": "matrices summed over angles (PyRadiomics weightingNorm\u003dno_weighting), symmetric GLCM",
+  "maskConvention": "pixel included if its centre lies inside the ROI polygon (Java2D fill, STROKE_PURE, no antialiasing)",
+  "enabledFeatures": {
+    "firstorder": true,
+    "shape2D": true,
+    "glcm": true,
+    "glrlm": true,
+    "glszm": true,
+    "ngtdm": true,
+    "gldm": true,
+    "shape": false
+  },
+  "nObjects": 80,
+  "timestamp": "2026-09-15T09:48:03",
+  "headless": true,
+  "processed": 80,
+  "skipped": 0,
+  "extractSeconds": 8.155560174,
+  "csvWriteSeconds": 0.050325186,
+  "objectsPerSecond": 9.809258750250011,
+  "peakHeapMB": 1043.2375640869140625,
+  "javaVersion": "21.0.11",
+  "availableProcessors": 80,
+  "threads": 1
+}
