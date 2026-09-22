@@ -154,14 +154,14 @@ def main():
 
     # ---- Figure S2: scatter + Bland-Altman for representative features (breast) ----
     reps = ['firstorder_Mean', 'firstorder_Entropy', 'shape2D_Sphericity', 'glcm_Contrast', 'glcm_Imc2', 'glrlm_RunEntropy', 'glszm_ZoneEntropy', 'ngtdm_Busyness', 'gldm_DependenceVariance']
-    fig, axes = plt.subplots(3, 6, figsize=(st.DOUBLE_COLUMN_IN, 5.4))
+    fig, axes = plt.subplots(3, 6, figsize=(st.DOUBLE_COLUMN_IN, 5.8))
     for k, f in enumerate(reps):
         r, cidx = divmod(k, 3)
         x = breast_m['original_' + f].values; y = breast_m[f].values
         ax = axes[r, 2 * cidx]; ax.scatter(x, y, s=5, alpha=0.6, color=st.CLASS_COLOURS[f.split('_')[0]], edgecolors='none')
         lo, hi = np.nanmin(x), np.nanmax(x); ax.plot([lo, hi], [lo, hi], color='black', lw=0.6, ls='--')
         ax.set_xlabel('PyRadiomics', fontsize=st.SMALL); ax.set_ylabel('QuRad', fontsize=st.SMALL); ax.tick_params(labelsize=6)
-        ax.text(0.03, 0.97, f.replace('_', ' ') + f"\nCCC = {breast_df[breast_df.feature == f].ccc.iloc[0]:.4f}", transform=ax.transAxes, fontsize=6, va='top')
+        ax.set_title(f.replace('_', ' ') + f", CCC = {breast_df[breast_df.feature == f].ccc.iloc[0]:.4f}", fontsize=6, loc='left', pad=2)
         ax = axes[r, 2 * cidx + 1]; d = y - x; mean = (x + y) / 2
         ax.scatter(mean, d, s=5, alpha=0.6, color=st.CLASS_COLOURS[f.split('_')[0]], edgecolors='none')
         ax.axhline(np.mean(d), color='black', lw=0.6); ax.axhline(np.mean(d) + 1.96 * np.std(d), color='grey', ls='--', lw=0.6); ax.axhline(np.mean(d) - 1.96 * np.std(d), color='grey', ls='--', lw=0.6)
@@ -170,7 +170,7 @@ def main():
             if v == 0: return '0'
             e = int(np.floor(np.log10(abs(v)))); m = v / 10 ** e
             return f"${m:.1f}\\times10^{{{e}}}$"
-        ax.text(0.03, 0.97, f"bias = {sci(np.mean(d))}\nSD = {sci(np.std(d))}", transform=ax.transAxes, fontsize=6, va='top')
+        ax.set_title(f"bias = {sci(np.mean(d))}, SD = {sci(np.std(d))}", fontsize=6, loc='left', pad=2)
         fmt = matplotlib.ticker.ScalarFormatter(useMathText=True); fmt.set_powerlimits((-2, 2)); ax.yaxis.set_major_formatter(fmt); ax.yaxis.get_offset_text().set_fontsize(6)
     fig.tight_layout(pad=0.3, w_pad=0.4, h_pad=0.6); fig.savefig(os.path.join(FIG, 'figure_S2_bland_altman.png'), dpi=st.DPI); fig.savefig(os.path.join(FIG, 'figure_S2_bland_altman.pdf')); plt.close(fig)
 

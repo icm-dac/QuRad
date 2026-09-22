@@ -1,0 +1,12 @@
+{
+  "title": "QuRad",
+  "description": "Radiomics feature extraction inside QuPath, validated feature by feature against PyRadiomics.",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {"name": "Künzle, Tamara", "affiliation": "Institut du Cerveau", "orcid": "0009-0005-7663-6819"},
+    {"name": "Arslan, Janan", "affiliation": "Institut du Cerveau", "orcid": "0000-0003-2683-3775"},
+    {"name": "Alentorn, Agustí", "affiliation": "Assistance Publique – Hôpitaux de Paris", "orcid": "0000-0002-7220-2686"}
+  ],
+  "keywords": ["radiomics", "QuPath", "digital pathology", "PyRadiomics", "histopathology"]
+}
