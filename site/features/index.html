@@ -1113,7 +1113,7 @@ pixels, <code>p = P / N_z</code>. Definitions mirror the GLRLM ones with zone si
 <p class="admonition-title">Not recommended for 2D histology</p>
 <p>These features exist only so that pipelines expecting PyRadiomics' 3D <code>shape_*</code> column names keep working. They
 are computed from the same 2D polygon and mask as the <code>shape2D</code> class, and they are <strong>not</strong> numerically equivalent
-to PyRadiomics' 3D shape features, which treat a single slice as a slab of unit thickness. Enable them only if you
+to PyRadiomics' 3D shape features, which treat a single slice as a one-voxel-thick volume. Enable them only if you
 know why you need them; use <code>shape2D_*</code> otherwise.</p>
 </div>
 <table>

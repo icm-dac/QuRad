@@ -201,7 +201,7 @@ Dependence matrix `P(i,j)`: gray level i, dependence j = 1 + number of 8-neighbo
 !!! warning "Not recommended for 2D histology"
     These features exist only so that pipelines expecting PyRadiomics' 3D `shape_*` column names keep working. They
     are computed from the same 2D polygon and mask as the `shape2D` class, and they are **not** numerically equivalent
-    to PyRadiomics' 3D shape features, which treat a single slice as a slab of unit thickness. Enable them only if you
+    to PyRadiomics' 3D shape features, which treat a single slice as a one-voxel-thick volume. Enable them only if you
     know why you need them; use `shape2D_*` otherwise.
 
 | Feature | How QuRad computes it | Equivalent 2D feature |

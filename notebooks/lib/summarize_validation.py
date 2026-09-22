@@ -22,7 +22,7 @@ OUT = os.path.join(RES, 'tables'); FIG = os.path.join(RES, 'figures'); os.makedi
 NOTES = {
     'gldm_DependencePercentage': 'removed in 0.4 (always 1)',
 }
-LEGACY_NOTE = ('2D quantity under PyRadiomics 3D name; PyRadiomics evaluates a unit-thickness slab, so values are not expected to agree')
+LEGACY_NOTE = ('2D quantity under PyRadiomics 3D name; PyRadiomics evaluates a one-voxel-thick volume, so values are not expected to agree')
 
 def load_pair(qurad_csv, pyrad_csv):
     q = pd.read_csv(qurad_csv); p = pd.read_csv(pyrad_csv)

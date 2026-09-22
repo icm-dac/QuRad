@@ -137,10 +137,9 @@ All other conventions (grayscale conversion, pixel-centre mask rule, edge-case h
     Features are computed at the image's native resolution, in pixel units. A GLCM distance of 1 pixel therefore
     corresponds to a different physical distance on a 0.25 µm/px slide than on a 0.5 µm/px slide. QuRad records the
     pixel calibration of every image in the CSV (`PixelWidth_um`, `PixelHeight_um`) and in the settings file so that
-    you can account for it; when comparing slides scanned at different resolutions, either resample the images to a
-    common resolution in QuPath or set `distances` per slide (e.g. `[2]` on a 0.25 µm/px slide to match `[1]` on a
-    0.5 µm/px slide). Length and area features are reported in pixels and can be converted with the calibration
-    columns.
+    you can account for it. Compare images at a common physical resolution. Changing `distances` adjusts only
+    the GLCM sampling offset; it does not harmonize GLRLM, GLSZM, GLDM, NGTDM or pixel-based shape measurements.
+    Length and area features are reported in pixels and can be converted using the calibration columns.
 
 ### Feature selection
 
