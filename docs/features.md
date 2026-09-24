@@ -44,8 +44,8 @@ These conventions are fixed in the code and recorded in the `*_settings.json` fi
 !!! note "Angle aggregation"
     PyRadiomics' *default* computes GLCM and GLRLM features for each direction separately and averages the feature
     values. QuRad sums the matrices first, which corresponds to PyRadiomics with `weightingNorm='no_weighting'`. On the
-    validation data the two conventions differ by a median relative error of about 0.5 % (GLCM) and 3 % (GLRLM), with
-    maximum differences of up to 50 % for run-length emphasis features of individual small nuclei.
+    breast-cancer benchmark tile the two conventions differ by a median relative error of about 0.4 % (GLCM) and 2.6 %
+    (GLRLM), with differences of up to 46 % for `glrlm_LongRunEmphasis` in individual cells.
 
 CSV headers include the union of feature names over all processed objects. If a feature is undefined for one object, its cell is blank; that object does not suppress valid columns for later objects.
 
@@ -58,7 +58,7 @@ CSV headers include the union of feature names over all processed objects. If a 
 | Flat region (single gray level) | `firstorder_Entropy = 0`, `Uniformity = 1`, `Skewness = Kurtosis = 0`, `glcm_Correlation = 1`, `glcm_Imc1 = Imc2 = 0`, `ngtdm_Coarseness = 10^6`, `ngtdm_Contrast = Busyness = Strength = 0` (all as in PyRadiomics) |
 | Zero denominator elsewhere (perimeter 0, no run/zone, …) | feature is 0 |
 | `glcm_Imc2` with HXY2 < HXY (rounding) | 0 (as in PyRadiomics) |
-| Very small ROIs | QuRad computes all features from a single pixel upwards; PyRadiomics refuses masks with fewer than 2 pixels in any dimension. Texture matrices of ROIs with fewer than ~10 pixels are degenerate; use the `NumPixels` column to filter. |
+| Very small ROIs | QuRad computes features from a single pixel upwards, except that a single pixel has no neighbour pair, so its GLCM columns are blank; PyRadiomics refuses masks with fewer than 2 pixels in any dimension. Texture matrices of ROIs with fewer than ~10 pixels are degenerate; use the `NumPixels` column to filter. |
 
 ## First-order features (19)
 

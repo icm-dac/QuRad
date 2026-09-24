@@ -47,7 +47,7 @@ For every image QuRad writes two files into `<project>/radiomics/`:
 ```
 
 The CSV has 9 metadata columns (image, object ID, type, class, centroid, pixel count, pixel
-size) and the 103 features, named `class_FeatureName` exactly as in PyRadiomics. The values can
+size) and the 103 features, named `class_FeatureName` as in PyRadiomics without its `original_` prefix. The values can
 also go straight into QuPath's measurement table for measurement maps and classifiers.
 
 Defaults: bin width 25, GLCM distance 1 pixel, texture matrices summed over the four in-plane
@@ -59,7 +59,8 @@ Single-threaded, about 1,900 nuclei per second on a server CPU.
 
 ## Reproducing the paper
 
-Three notebooks produce every number in the article, from feature tables included here:
+Three notebooks produce the validation and classification results of the article from the feature tables
+included here:
 
 | Notebook | Shows | Runtime |
 |---|---|---|
@@ -67,8 +68,12 @@ Three notebooks produce every number in the article, from feature tables include
 | `notebooks/example_application_puma.ipynb` | tumour vs lymphocyte classification on 20 PUMA melanoma tiles | ~9 min |
 | `notebooks/example_application_tiger.ipynb` | tissue-compartment classification on 6 TIGER breast-cancer slides | ~1 min |
 
+The environment is Python 3.10. PyRadiomics 3.0.1 has no wheel for current Python versions and
+builds from source against the installed NumPy (this needs a C compiler), so NumPy goes first:
+
 ```bash
-pip install -r requirements.txt
+pip install numpy==1.26.4 setuptools wheel
+pip install --no-build-isolation -r requirements.txt jupyterlab
 jupyter lab notebooks/
 ```
 
@@ -91,7 +96,9 @@ including CPU model and JVM, are in `example_data/benchmark/`.
 
 The code the notebooks import is in `notebooks/lib/`; everything they write goes to
 `notebooks/results/` (tables, figures, per-object predictions). `QURAD_DATA` and
-`QURAD_RESULTS` override the input and output folders.
+`QURAD_RESULTS` override the input and output folders. After the notebooks have run,
+`python notebooks/lib/report.py` formats Tables 3, 4 and S2 to S6 of the article from their
+outputs. The repository state used for the article is tagged `paper-2026`.
 
 ## Data
 
@@ -100,9 +107,12 @@ The code the notebooks import is in `notebooks/lib/`; everything they write goes
   B. S. Manjunath, "Evaluation and benchmark for biological image segmentation," *IEEE ICIP*
   2008, pp. 1816–1819.
 - PUMA melanoma tiles: [PUMA challenge](https://puma.grand-challenge.org/) (CC0). The feature
-  tables are included; the images are not.
-- TIGER breast-cancer slides: [TIGER challenge](https://tiger.grand-challenge.org/), public on
-  AWS Open Data (`s3://tiger-training/`). The feature tables are included; the slides are not.
+  tables are included. The images are not tracked in git because of their size; the
+  reproducibility archive of the article contains the 20 tiles and their annotations.
+- TIGER breast-cancer slides and region annotations: [TIGER challenge](https://tiger.grand-challenge.org/)
+  (CC BY-NC 4.0), public on AWS Open Data (`s3://tiger-training/`). The feature tables derived
+  from them are included under the same licence, and the reproducibility archive of the article also contains
+  the region annotations. The slides are not included.
 
 ## Citation
 
@@ -112,4 +122,4 @@ together with [QuPath](https://qupath.github.io) and [PyRadiomics](https://pyrad
 
 ## License
 
-MIT.
+MIT for the code. The example data keep the licences listed under Data.
