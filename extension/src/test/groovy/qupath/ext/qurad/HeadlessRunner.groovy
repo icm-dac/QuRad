@@ -120,6 +120,9 @@ class HeadlessRunner {
         record['objectsPerSecond'] = allResults.size() / extractSeconds
         record['peakHeapMB'] = peakHeap / (1024.0 * 1024.0)
         record['javaVersion'] = System.getProperty('java.version')
+        record['javaVendor'] = System.getProperty('java.vm.name') + ' (' + System.getProperty('java.vendor') + ')'
+        def cpuinfo = new File('/proc/cpuinfo')
+        record['cpuModel'] = cpuinfo.exists() ? (cpuinfo.readLines().find { it.startsWith('model name') }?.split(':', 2)?.getAt(1)?.trim()) : System.getProperty('os.arch')
         record['availableProcessors'] = Runtime.getRuntime().availableProcessors()
         record['threads'] = 1
         calc.writeSettingsJson(new File(opts.json ?: (opts.out.replaceAll(/\.csv$/, '') + '_settings.json')), record)

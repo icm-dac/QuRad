@@ -28,7 +28,7 @@ sq = pd.read_csv(os.path.join(B, 'squares_timing.csv'))
 sqs = sq.groupby('NumPixels')['ms'].median().reset_index(); sqs['side'] = np.sqrt(sqs.NumPixels).round().astype(int); sqs['us_per_pixel'] = 1000 * sqs.ms / sqs.NumPixels
 print(sqs.round(3).to_string(index=False))
 breast = load('breast'); bt = pd.read_csv(os.path.join(B, 'breast_timing.csv'))
-sysinfo = dict(java=breast['javaVersion'], cpus=breast['availableProcessors'], threads=breast['threads'], qupath=breast['qupathVersion'], qurad=breast['version'])
+sysinfo = dict(cpu=breast.get('cpuModel'), jvm=breast.get('javaVendor'), java=breast['javaVersion'], cpus=breast['availableProcessors'], threads=breast['threads'], qupath=breast['qupathVersion'], qurad=breast['version'])
 # steady-state throughput: largest scale run; extrapolation for a WSI
 big = scale[~scale['shape']].iloc[-1]
 steady = big.objects_per_s

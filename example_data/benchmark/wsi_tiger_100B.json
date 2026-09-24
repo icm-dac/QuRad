@@ -1,0 +1,23 @@
+{
+  "software": "QuRad",
+  "version": "0.4.0",
+  "run": "QuPath extension, GUI, after restarting QuPath",
+  "qupathVersion": "0.7",
+  "image": "100B.tif",
+  "imageWidth": 67456,
+  "imageHeight": 37376,
+  "pixelWidth_um": 0.45669399219053275,
+  "objects": "QuPath built-in cell detection, default 5 um cell expansion",
+  "enabledFeatures": "default (103 features)",
+  "addToMeasurements": false,
+  "processed": 184242,
+  "skipped": 0,
+  "extractSeconds": 161.6,
+  "objectsPerSecond": 1140.1,
+  "meanNumPixels": 559.1062136,
+  "totalNumPixels": 103010847,
+  "threads": 1,
+  "cpuModel": "Apple M2 (MacBook Air, 4 performance + 4 efficiency cores)",
+  "memoryGB": 16,
+  "source": "QuPath log line 'QuRad: complete. processed=184242, skipped=0, time=161.6s'; NumPixels from the exported CSV"
+}

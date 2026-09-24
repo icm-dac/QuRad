@@ -85,6 +85,10 @@ cd extension && ./gradlew headless -PrunnerArgs="--image <tif> --objects <geojso
 python notebooks/lib/pyradiomics_extract.py --image <tif> --gray <dir>/gray.png --masks <dir>/masks --out <dir>/pyradiomics_noweighting.csv
 ```
 
+The timing benchmark (Table S3, Figure S3) is rerun with `notebooks/lib/run_benchmark.sh` on an
+idle machine and summarised with `python notebooks/lib/benchmark_report.py`; the raw timings,
+including CPU model and JVM, are in `example_data/benchmark/`.
+
 The code the notebooks import is in `notebooks/lib/`; everything they write goes to
 `notebooks/results/` (tables, figures, per-object predictions). `QURAD_DATA` and
 `QURAD_RESULTS` override the input and output folders.

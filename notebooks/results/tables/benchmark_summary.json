@@ -3,64 +3,64 @@
   {
    "run": "scale_rep1",
    "objects": 634,
-   "seconds": 2.494954314,
-   "objects_per_s": 254.1128694992208,
-   "csv_s": 0.155747083,
-   "peak_heap_MB": 202.7052764892578,
+   "seconds": 2.242195177,
+   "objects_per_s": 282.7586137475667,
+   "csv_s": 0.134245715,
+   "peak_heap_MB": 210.70084381103516,
    "shape": false
   },
   {
    "run": "scale_rep2",
    "objects": 1268,
-   "seconds": 2.805622134,
-   "objects_per_s": 451.9496708532882,
-   "csv_s": 0.223628266,
-   "peak_heap_MB": 279.92899322509766,
+   "seconds": 2.925650664,
+   "objects_per_s": 433.4078622587047,
+   "csv_s": 0.193275364,
+   "peak_heap_MB": 220.9174575805664,
    "shape": false
   },
   {
    "run": "scale_rep5",
    "objects": 3170,
-   "seconds": 4.390677014,
-   "objects_per_s": 721.9843294991226,
-   "csv_s": 0.356726355,
-   "peak_heap_MB": 320.0420684814453,
+   "seconds": 4.445970775,
+   "objects_per_s": 713.005136656572,
+   "csv_s": 0.285289281,
+   "peak_heap_MB": 274.38999938964844,
    "shape": false
   },
   {
    "run": "scale_rep10",
    "objects": 6340,
-   "seconds": 6.370022455,
-   "objects_per_s": 995.2869153582914,
-   "csv_s": 0.596542512,
-   "peak_heap_MB": 359.1463623046875,
+   "seconds": 6.963686454,
+   "objects_per_s": 910.4373153329226,
+   "csv_s": 0.514218541,
+   "peak_heap_MB": 494.4045867919922,
    "shape": false
   },
   {
    "run": "scale_rep10_withshape",
    "objects": 6340,
-   "seconds": 6.637783743,
-   "objects_per_s": 955.1380770254781,
-   "csv_s": 0.646240609,
-   "peak_heap_MB": 457.1309509277344,
+   "seconds": 6.504709864,
+   "objects_per_s": 974.678368836775,
+   "csv_s": 0.502625289,
+   "peak_heap_MB": 556.0447235107422,
    "shape": true
   },
   {
    "run": "scale_rep20",
    "objects": 12680,
-   "seconds": 9.455376194,
-   "objects_per_s": 1341.036013780839,
-   "csv_s": 0.834113498,
-   "peak_heap_MB": 940.9391326904297,
+   "seconds": 9.333968056,
+   "objects_per_s": 1358.4790438455727,
+   "csv_s": 0.749551966,
+   "peak_heap_MB": 705.0886611938477,
    "shape": false
   },
   {
    "run": "scale_rep40",
    "objects": 25360,
-   "seconds": 13.60359217,
-   "objects_per_s": 1864.2134873703728,
-   "csv_s": 1.478518553,
-   "peak_heap_MB": 1055.9820251464844,
+   "seconds": 13.34488537,
+   "objects_per_s": 1900.3535284769553,
+   "csv_s": 1.319826187,
+   "peak_heap_MB": 909.8035202026367,
    "shape": false
   }
  ],
@@ -68,114 +68,116 @@
   {
    "feature_class": "firstorder",
    "objects": 3170,
-   "ms_per_object": 0.46110322176656154,
-   "objects_per_s": 2168.7118042004504
+   "ms_per_object": 0.5267849817034701,
+   "objects_per_s": 1898.307724655114
   },
   {
    "feature_class": "glcm",
    "objects": 3170,
-   "ms_per_object": 0.7091604249211357,
-   "objects_per_s": 1410.1181691169638
+   "ms_per_object": 0.7919130608832807,
+   "objects_per_s": 1262.7648783625618
   },
   {
    "feature_class": "gldm",
    "objects": 3170,
-   "ms_per_object": 0.501611810725552,
-   "objects_per_s": 1993.5734737855528
+   "ms_per_object": 0.48711461892744484,
+   "objects_per_s": 2052.9049245162337
   },
   {
    "feature_class": "glrlm",
    "objects": 3170,
-   "ms_per_object": 0.6873178324921135,
-   "objects_per_s": 1454.9309689436498
+   "ms_per_object": 0.7232021974763406,
+   "objects_per_s": 1382.7391613155528
   },
   {
    "feature_class": "glszm",
    "objects": 3170,
-   "ms_per_object": 0.6160763845425867,
-   "objects_per_s": 1623.1753482037166
+   "ms_per_object": 0.6686173340694006,
+   "objects_per_s": 1495.6238031008074
   },
   {
    "feature_class": "ngtdm",
    "objects": 3170,
-   "ms_per_object": 0.4711943047318612,
-   "objects_per_s": 2122.2667378568212
+   "ms_per_object": 0.47562770599369086,
+   "objects_per_s": 2102.4847530922953
   },
   {
    "feature_class": "shape",
    "objects": 3170,
-   "ms_per_object": 0.48079075362776025,
-   "objects_per_s": 2079.9068876732686
+   "ms_per_object": 0.4961618788643533,
+   "objects_per_s": 2015.471245571835
   },
   {
    "feature_class": "shape2D",
    "objects": 3170,
-   "ms_per_object": 0.4641835504731861,
-   "objects_per_s": 2154.3202015250336
+   "ms_per_object": 0.5179786132492114,
+   "objects_per_s": 1930.581638742056
   }
  ],
  "squares": [
   {
    "NumPixels": 64,
-   "ms": 3.084059,
+   "ms": 3.1861705000000002,
    "side": 8,
-   "us_per_pixel": 48.188421874999996
+   "us_per_pixel": 49.7839140625
   },
   {
    "NumPixels": 256,
-   "ms": 2.6536020000000002,
+   "ms": 3.6581585,
    "side": 16,
-   "us_per_pixel": 10.365632812500001
+   "us_per_pixel": 14.289681640625
   },
   {
    "NumPixels": 1024,
-   "ms": 3.115454,
+   "ms": 3.92166,
    "side": 32,
-   "us_per_pixel": 3.042435546875
+   "us_per_pixel": 3.8297460937500003
   },
   {
    "NumPixels": 4096,
-   "ms": 4.6616455000000006,
+   "ms": 5.06859,
    "side": 64,
-   "us_per_pixel": 1.1380970458984376
+   "us_per_pixel": 1.23744873046875
   },
   {
    "NumPixels": 16384,
-   "ms": 10.5891515,
+   "ms": 11.9541425,
    "side": 128,
-   "us_per_pixel": 0.6463105163574219
+   "us_per_pixel": 0.7296229553222656
   },
   {
    "NumPixels": 65536,
-   "ms": 32.6667945,
+   "ms": 31.2675215,
    "side": 256,
-   "us_per_pixel": 0.49845572662353516
+   "us_per_pixel": 0.47710451507568363
   },
   {
    "NumPixels": 262144,
-   "ms": 122.584907,
+   "ms": 105.5348415,
    "side": 512,
-   "us_per_pixel": 0.46762430953979495
+   "us_per_pixel": 0.40258347129821775
   },
   {
    "NumPixels": 1048576,
-   "ms": 456.9208205,
+   "ms": 407.47125700000004,
    "side": 1024,
-   "us_per_pixel": 0.43575365114212034
+   "us_per_pixel": 0.38859487247467045
   }
  ],
  "breast": {
   "objects": 2050,
-  "objects_per_s": 623.1614203656121,
-  "median_ms": 0.720599,
-  "peak_heap_MB": 248.7599639892578
+  "objects_per_s": 627.5788435398437,
+  "median_ms": 0.6942269999999999,
+  "peak_heap_MB": 195.03904724121094
  },
- "steady_state_objects_per_s": 1864.2134873703728,
- "minutes_per_100k_cells": 0.8940320826761304,
- "minutes_per_500k_cells": 4.470160413380652,
+ "steady_state_objects_per_s": 1900.3535284769553,
+ "minutes_per_100k_cells": 0.8770297956098844,
+ "minutes_per_500k_cells": 4.385148978049421,
  "system": {
+  "cpu": "AMD EPYC 7643 48-Core Processor",
+  "jvm": "OpenJDK 64-Bit Server VM (Eclipse Adoptium)",
   "java": "21.0.11",
-  "cpus": 80,
+  "cpus": 22,
   "threads": 1,
   "qupath": "0.6.0",
   "qurad": "0.4.0"

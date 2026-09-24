@@ -60,15 +60,17 @@
     "shape": false
   },
   "nObjects": 634,
-  "timestamp": "2026-09-15T09:46:07",
+  "timestamp": "2026-09-23T22:58:40",
   "headless": true,
   "processed": 634,
   "skipped": 1,
-  "extractSeconds": 2.494954314,
-  "csvWriteSeconds": 0.155747083,
-  "objectsPerSecond": 254.1128694992208,
-  "peakHeapMB": 202.7052764892578125,
+  "extractSeconds": 2.242195177,
+  "csvWriteSeconds": 0.134245715,
+  "objectsPerSecond": 282.7586137475667,
+  "peakHeapMB": 210.70084381103515625,
   "javaVersion": "21.0.11",
-  "availableProcessors": 80,
+  "javaVendor": "OpenJDK 64-Bit Server VM (Eclipse Adoptium)",
+  "cpuModel": "AMD EPYC 7643 48-Core Processor",
+  "availableProcessors": 22,
   "threads": 1
 }
